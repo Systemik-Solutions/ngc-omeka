@@ -215,7 +215,7 @@ class InstallCommand extends Command
         $db = $config['db'];
         $dbHost = $db['host'] ?? 'localhost';
         $dbPort = $db['port'] ?? '3306';
-        $dbUser = $db['user'] ?? 'root';
+        $dbUser = $db['username'] ?? 'root';
         $dbPassword = $db['password'] ?? '';
         $dbName = $db['database'] ?? 'omeka_s';
 
