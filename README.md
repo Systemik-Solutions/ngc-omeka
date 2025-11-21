@@ -2,6 +2,26 @@
 
 Intro here...
 
+## System Requirements
+
+- PHP 8.2 or higher with the following extensions enabled:
+  - cli
+  - curl
+  - imagick or gd
+  - intl
+  - mbstring
+  - mysql
+  - opcache
+  - PDO
+  - pdo_mysql
+  - readline
+  - xml
+  - zip
+- [Composer](https://getcomposer.org/)
+
+For other Omeka S system requirements, refer to the 
+[Omeka S documentation](https://omeka.org/s/docs/user-manual/install/#system-requirements).
+
 ## Installation
 
 Clone the repository and rename the directory to your project name:
