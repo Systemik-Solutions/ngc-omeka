@@ -1,0 +1,305 @@
+{
+    "o:label": "Event",
+    "o:resource_template_property": [
+        {
+            "o:alternate_label": "Name",
+            "o:alternate_comment": "Event name\/title.",
+            "o:is_required": true,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "name",
+            "label": "name"
+        },
+        {
+            "o:alternate_label": "Description",
+            "o:alternate_comment": "Concise summary of what the event is\/was, scope, and significance.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "description",
+            "label": "description"
+        },
+        {
+            "o:alternate_label": "Identifier",
+            "o:alternate_comment": "Local or authoritative IDs.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "identifier",
+            "label": "identifier"
+        },
+        {
+            "o:alternate_label": "URL",
+            "o:alternate_comment": "Related URLs for the item.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "uri",
+                    "label": "URI"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "url",
+            "label": "url"
+        },
+        {
+            "o:alternate_label": "Start date",
+            "o:alternate_comment": "Start date of the event.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "numeric:timestamp",
+                    "label": "Timestamp"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "startDate",
+            "label": "startDate"
+        },
+        {
+            "o:alternate_label": "End date",
+            "o:alternate_comment": "End date of the event.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "numeric:timestamp",
+                    "label": "Timestamp"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "endDate",
+            "label": "endDate"
+        },
+        {
+            "o:alternate_label": "Location",
+            "o:alternate_comment": "Linked Place(s) for where the event occurred. Link to a Place record.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "location",
+            "label": "location"
+        },
+        {
+            "o:alternate_label": "Organiser",
+            "o:alternate_comment": "Organising Person\/Organisation for planned events.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "organizer",
+            "label": "organizer"
+        },
+        {
+            "o:alternate_label": "Performer",
+            "o:alternate_comment": "Performers or appearing participants (concerts, theater, re-enactments).\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "performer",
+            "label": "performer"
+        },
+        {
+            "o:alternate_label": "Attendee",
+            "o:alternate_comment": "Attendees or audience members.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "attendee",
+            "label": "attendee"
+        },
+        {
+            "o:alternate_label": "About",
+            "o:alternate_comment": "Topics, people, places, organizations or works the event concerns.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource",
+                    "label": "All"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "about",
+            "label": "about"
+        },
+        {
+            "o:alternate_label": "Keywords",
+            "o:alternate_comment": "Free\u2011text tags and subject terms.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "keywords",
+            "label": "keywords"
+        },
+        {
+            "o:alternate_label": "Super event",
+            "o:alternate_comment": "An event that this event is a part of.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                },
+                {
+                    "name": "resource:itemset",
+                    "label": "Item Set"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "superEvent",
+            "label": "superEvent"
+        },
+        {
+            "o:alternate_label": "Sub event",
+            "o:alternate_comment": "Event that is part of this event. ",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                },
+                {
+                    "name": "resource:itemset",
+                    "label": "Item Set"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "subEvent",
+            "label": "subEvent"
+        }
+    ],
+    "o:resource_class": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "Event",
+        "label": "Event"
+    },
+    "o:title_property": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "name",
+        "label": "name"
+    },
+    "o:description_property": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "description",
+        "label": "description"
+    }
+}

@@ -1,0 +1,548 @@
+{
+    "o:label": "Text",
+    "o:resource_template_property": [
+        {
+            "o:alternate_label": "Name",
+            "o:alternate_comment": "Human\u2011readable title of the text.\u200b",
+            "o:is_required": true,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "name",
+            "label": "name"
+        },
+        {
+            "o:alternate_label": "Alternate name",
+            "o:alternate_comment": "Alternate or translated title.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "alternateName",
+            "label": "alternateName"
+        },
+        {
+            "o:alternate_label": "Type",
+            "o:alternate_comment": "Specific type of the text.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "customvocab:1",
+                    "label": "Text type"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "additionalType",
+            "label": "additionalType"
+        },
+        {
+            "o:alternate_label": "Description",
+            "o:alternate_comment": "Summary\/abstract.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "description",
+            "label": "description"
+        },
+        {
+            "o:alternate_label": "Identifier",
+            "o:alternate_comment": "Local ID, DOI\/Handle\/ARK or other persistent identifier.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "identifier",
+            "label": "identifier"
+        },
+        {
+            "o:alternate_label": "URL",
+            "o:alternate_comment": "Related URLs for the item.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "uri",
+                    "label": "URI"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "url",
+            "label": "url"
+        },
+        {
+            "o:alternate_label": "Author",
+            "o:alternate_comment": "Primary writer, letter sender, or compiler for the text.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "author",
+            "label": "author"
+        },
+        {
+            "o:alternate_label": "Creator",
+            "o:alternate_comment": "Use for creators when role is broader than writing (e.g., translator as sole creator).\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "creator",
+            "label": "creator"
+        },
+        {
+            "o:alternate_label": "Contributor",
+            "o:alternate_comment": "Additional contributors (e.g., transcriber, translator, annotator).\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "contributor",
+            "label": "contributor"
+        },
+        {
+            "o:alternate_label": "Editor",
+            "o:alternate_comment": "Editor(s) for editions or critical texts.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "editor",
+            "label": "editor"
+        },
+        {
+            "o:alternate_label": "Publisher",
+            "o:alternate_comment": "Publishing body for issued texts.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "publisher",
+            "label": "publisher"
+        },
+        {
+            "o:alternate_label": "Date created",
+            "o:alternate_comment": "Composition or manuscript creation date.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "numeric:timestamp",
+                    "label": "Timestamp"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "dateCreated",
+            "label": "dateCreated"
+        },
+        {
+            "o:alternate_label": "Date published",
+            "o:alternate_comment": "Publication\/issue date for print or digital editions.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "numeric:timestamp",
+                    "label": "Timestamp"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "datePublished",
+            "label": "datePublished"
+        },
+        {
+            "o:alternate_label": "Version",
+            "o:alternate_comment": "Edition or version statement (useful for multiple states of the same text).\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "version",
+            "label": "version"
+        },
+        {
+            "o:alternate_label": "Language",
+            "o:alternate_comment": "Language of the text.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "customvocab:6",
+                    "label": "Language"
+                },
+                {
+                    "name": "customvocab:7",
+                    "label": "Austlang"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "inLanguage",
+            "label": "inLanguage"
+        },
+        {
+            "o:alternate_label": "Location",
+            "o:alternate_comment": "Related place such as where the item is located. Link to a Place record.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "location",
+            "label": "location"
+        },
+        {
+            "o:alternate_label": "About",
+            "o:alternate_comment": "Topical entities, people, works, places described in the text.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource",
+                    "label": "All"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "about",
+            "label": "about"
+        },
+        {
+            "o:alternate_label": "Keywords",
+            "o:alternate_comment": "Free\u2011text tags and subject terms.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "keywords",
+            "label": "keywords"
+        },
+        {
+            "o:alternate_label": "Citation",
+            "o:alternate_comment": "Bibliographic citation to related scholarship or source editions.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "citation",
+            "label": "citation"
+        },
+        {
+            "o:alternate_label": "Transcription",
+            "o:alternate_comment": "The source text this is translated from.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "translationOfWork",
+            "label": "translationOfWork"
+        },
+        {
+            "o:alternate_label": "Translation",
+            "o:alternate_comment": "Translations derived from this text.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "workTranslation",
+            "label": "workTranslation"
+        },
+        {
+            "o:alternate_label": "License",
+            "o:alternate_comment": "Reuse license or rights statement.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "license",
+            "label": "license"
+        },
+        {
+            "o:alternate_label": "Copyright holder",
+            "o:alternate_comment": "Rights owner (person\/organization).\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "copyrightHolder",
+            "label": "copyrightHolder"
+        },
+        {
+            "o:alternate_label": "Is part of",
+            "o:alternate_comment": "Parent issue\/volume\/collection or composite work.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                },
+                {
+                    "name": "resource:itemset",
+                    "label": "Item Set"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "isPartOf",
+            "label": "isPartOf"
+        },
+        {
+            "o:alternate_label": "Has part",
+            "o:alternate_comment": "Constituent parts (chapters, letters within a dossier, articles within an issue).\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                },
+                {
+                    "name": "resource:itemset",
+                    "label": "Item Set"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "hasPart",
+            "label": "hasPart"
+        }
+    ],
+    "o:resource_class": {
+        "vocabulary_namespace_uri": "http:\/\/purl.org\/dc\/dcmitype\/",
+        "vocabulary_label": "Dublin Core Type",
+        "local_name": "Text",
+        "label": "Text"
+    },
+    "o:title_property": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "name",
+        "label": "name"
+    },
+    "o:description_property": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "description",
+        "label": "description"
+    }
+}

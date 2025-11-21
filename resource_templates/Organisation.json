@@ -1,0 +1,238 @@
+{
+    "o:label": "Organisation",
+    "o:resource_template_property": [
+        {
+            "o:alternate_label": "Name",
+            "o:alternate_comment": "Official display name of the organisation.",
+            "o:is_required": true,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "name",
+            "label": "name"
+        },
+        {
+            "o:alternate_label": "Description",
+            "o:alternate_comment": "Description of the organisation.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "description",
+            "label": "description"
+        },
+        {
+            "o:alternate_label": "Identifier",
+            "o:alternate_comment": "Local IDs or registry IDs.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "identifier",
+            "label": "identifier"
+        },
+        {
+            "o:alternate_label": "URL",
+            "o:alternate_comment": "Canonical homepage or landing page for the organisation.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "uri",
+                    "label": "URI"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "url",
+            "label": "url"
+        },
+        {
+            "o:alternate_label": "Legal name",
+            "o:alternate_comment": "Registered legal name if different from display name.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "legalName",
+            "label": "legalName"
+        },
+        {
+            "o:alternate_label": "Alternate name",
+            "o:alternate_comment": "Acronyms or former names.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "alternateName",
+            "label": "alternateName"
+        },
+        {
+            "o:alternate_label": "Location",
+            "o:alternate_comment": "Linked places for campuses, buildings, or venues. Link to a Place record.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "location",
+            "label": "location"
+        },
+        {
+            "o:alternate_label": "Contact",
+            "o:alternate_comment": "Public or departmental contacts.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "contactPoint",
+            "label": "contactPoint"
+        },
+        {
+            "o:alternate_label": "Member",
+            "o:alternate_comment": "The people associated with the organisation.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "member",
+            "label": "member"
+        },
+        {
+            "o:alternate_label": "Parent organisation",
+            "o:alternate_comment": "The larger organisation this organisation belongs to.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                },
+                {
+                    "name": "resource:itemset",
+                    "label": "Item Set"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "parentOrganization",
+            "label": "parentOrganization"
+        },
+        {
+            "o:alternate_label": "Sub organisation",
+            "o:alternate_comment": "Child units (e.g., departments, schools, centers).",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                },
+                {
+                    "name": "resource:itemset",
+                    "label": "Item Set"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "subOrganization",
+            "label": "subOrganization"
+        }
+    ],
+    "o:resource_class": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "Organization",
+        "label": "Organization"
+    },
+    "o:title_property": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "name",
+        "label": "name"
+    },
+    "o:description_property": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "description",
+        "label": "description"
+    }
+}

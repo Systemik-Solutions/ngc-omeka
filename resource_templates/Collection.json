@@ -1,0 +1,225 @@
+{
+    "o:label": "Collection",
+    "o:resource_template_property": [
+        {
+            "o:alternate_label": "Name",
+            "o:alternate_comment": "Collection title.",
+            "o:is_required": true,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "name",
+            "label": "name"
+        },
+        {
+            "o:alternate_label": "Description",
+            "o:alternate_comment": "Scope note or abstract describing the collection\u2019s content and boundaries.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "description",
+            "label": "description"
+        },
+        {
+            "o:alternate_label": "Identifier",
+            "o:alternate_comment": "Local ID, DOI\/Handle\/ARK or other persistent identifier.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "identifier",
+            "label": "identifier"
+        },
+        {
+            "o:alternate_label": "URL",
+            "o:alternate_comment": "Related URLs for the item.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "uri",
+                    "label": "URI"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "url",
+            "label": "url"
+        },
+        {
+            "o:alternate_label": "About",
+            "o:alternate_comment": "Depicted people, works, places, or themes.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource",
+                    "label": "All"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "about",
+            "label": "about"
+        },
+        {
+            "o:alternate_label": "Keywords",
+            "o:alternate_comment": "Free\u2011text tags and subject terms.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "keywords",
+            "label": "keywords"
+        },
+        {
+            "o:alternate_label": "License",
+            "o:alternate_comment": "Reuse license or rights statement.\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "license",
+            "label": "license"
+        },
+        {
+            "o:alternate_label": "Copyright holder",
+            "o:alternate_comment": "Rights owner (person\/organization).\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "copyrightHolder",
+            "label": "copyrightHolder"
+        },
+        {
+            "o:alternate_label": "Is part of",
+            "o:alternate_comment": "Link to a parent collection (e.g., Series within a Fonds).",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                },
+                {
+                    "name": "resource:itemset",
+                    "label": "Item Set"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "isPartOf",
+            "label": "isPartOf"
+        },
+        {
+            "o:alternate_label": "Has part",
+            "o:alternate_comment": "Link member items or sub\u2011collections",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                },
+                {
+                    "name": "resource:itemset",
+                    "label": "Item Set"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "hasPart",
+            "label": "hasPart"
+        }
+    ],
+    "o:resource_class": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "Collection",
+        "label": "Collection"
+    },
+    "o:title_property": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "name",
+        "label": "name"
+    },
+    "o:description_property": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "description",
+        "label": "description"
+    }
+}

@@ -72,6 +72,92 @@
       "format": "turtle"
     }
   ],
-  "taxonomies": [],
-  "resource_templates": []
+  "taxonomies": [
+    {
+      "label": "Artifact type",
+      "file": "Artifact_type.json"
+    },
+    {
+      "label": "Audio type",
+      "file": "Audio_type.json"
+    },
+    {
+      "label": "Austlang",
+      "file": "Austlang.json"
+    },
+    {
+      "label": "Country",
+      "file": "Country.json"
+    },
+    {
+      "label": "Gender",
+      "file": "Gender.json"
+    },
+    {
+      "label": "Image type",
+      "file": "Image_type.json"
+    },
+    {
+      "label": "Language",
+      "file": "Language.json"
+    },
+    {
+      "label": "Material",
+      "file": "Material.json"
+    },
+    {
+      "label": "Medium",
+      "file": "Medium.json"
+    },
+    {
+      "label": "Text type",
+      "file": "Text_type.json"
+    },
+    {
+      "label": "Video type",
+      "file": "Video_type.json"
+    }
+  ],
+  "resource_templates": [
+    {
+      "label": "Artifact",
+      "file": "Artifact.json"
+    },
+    {
+      "label": "Audio",
+      "file": "Audio.json"
+    },
+    {
+      "label": "Collection",
+      "file": "Collection.json"
+    },
+    {
+      "label": "Event",
+      "file": "Event.json"
+    },
+    {
+      "label": "Image",
+      "file": "Image.json"
+    },
+    {
+      "label": "Organisation",
+      "file": "Organisation.json"
+    },
+    {
+      "label": "Person",
+      "file": "Person.json"
+    },
+    {
+      "label": "Place",
+      "file": "Place.json"
+    },
+    {
+      "label": "Text",
+      "file": "Text.json"
+    },
+    {
+      "label": "Video",
+      "file": "Video.json"
+    }
+  ]
 }

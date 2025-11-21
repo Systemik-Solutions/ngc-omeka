@@ -1,0 +1,341 @@
+{
+    "o:label": "Person",
+    "o:resource_template_property": [
+        {
+            "o:alternate_label": "Name",
+            "o:alternate_comment": "Preferred display name for the person.",
+            "o:is_required": true,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "name",
+            "label": "name"
+        },
+        {
+            "o:alternate_label": "Description",
+            "o:alternate_comment": "Short biographical note or abstract for context.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "description",
+            "label": "description"
+        },
+        {
+            "o:alternate_label": "Identifier",
+            "o:alternate_comment": "Local IDs or registry IDs.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "identifier",
+            "label": "identifier"
+        },
+        {
+            "o:alternate_label": "URL",
+            "o:alternate_comment": "Canonical landing page for the person.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "uri",
+                    "label": "URI"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "url",
+            "label": "url"
+        },
+        {
+            "o:alternate_label": "Alternate name",
+            "o:alternate_comment": "Alternate, former, or variant names.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "alternateName",
+            "label": "alternateName"
+        },
+        {
+            "o:alternate_label": "Gender",
+            "o:alternate_comment": "Gender of the person.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "customvocab:11",
+                    "label": "Gender"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "gender",
+            "label": "gender"
+        },
+        {
+            "o:alternate_label": "Birth date",
+            "o:alternate_comment": "Date of birth.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "numeric:timestamp",
+                    "label": "Timestamp"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "birthDate",
+            "label": "birthDate"
+        },
+        {
+            "o:alternate_label": "Death date",
+            "o:alternate_comment": "Date of death.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "numeric:timestamp",
+                    "label": "Timestamp"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "deathDate",
+            "label": "deathDate"
+        },
+        {
+            "o:alternate_label": "Birth place",
+            "o:alternate_comment": "Link to a Place record for birthplace.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "birthPlace",
+            "label": "birthPlace"
+        },
+        {
+            "o:alternate_label": "Death place",
+            "o:alternate_comment": "Link to a Place record for place of death.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "deathPlace",
+            "label": "deathPlace"
+        },
+        {
+            "o:alternate_label": "Affiliation",
+            "o:alternate_comment": "Organisation(s) with which the person is affiliated (e.g., university, society).\u200b",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "literal",
+                    "label": "Text"
+                },
+                {
+                    "name": "uri",
+                    "label": "URI"
+                },
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "affiliation",
+            "label": "affiliation"
+        },
+        {
+            "o:alternate_label": "Nationality",
+            "o:alternate_comment": "Nationality of the person.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "customvocab:10",
+                    "label": "Country"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "nationality",
+            "label": "nationality"
+        },
+        {
+            "o:alternate_label": "Home location",
+            "o:alternate_comment": "Link to a Place for residence.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "homeLocation",
+            "label": "homeLocation"
+        },
+        {
+            "o:alternate_label": "Children",
+            "o:alternate_comment": "The children of the person.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "children",
+            "label": "children"
+        },
+        {
+            "o:alternate_label": "Parent",
+            "o:alternate_comment": "The parent(s) of the person.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "parent",
+            "label": "parent"
+        },
+        {
+            "o:alternate_label": "Sibling",
+            "o:alternate_comment": "The sibling(s) of the person.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "sibling",
+            "label": "sibling"
+        },
+        {
+            "o:alternate_label": "Spouse",
+            "o:alternate_comment": "The spouse of the person.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "spouse",
+            "label": "spouse"
+        },
+        {
+            "o:alternate_label": "Knows",
+            "o:alternate_comment": "A generic bi\u2011directional social\/work relation for colleagues, collaborators, and acquaintances.",
+            "o:is_required": false,
+            "o:is_private": false,
+            "o:default_lang": null,
+            "data_types": [
+                {
+                    "name": "resource:item",
+                    "label": "Item"
+                }
+            ],
+            "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+            "vocabulary_label": "schema.org",
+            "local_name": "knows",
+            "label": "knows"
+        }
+    ],
+    "o:resource_class": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "Person",
+        "label": "Person"
+    },
+    "o:title_property": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "name",
+        "label": "name"
+    },
+    "o:description_property": {
+        "vocabulary_namespace_uri": "https:\/\/schema.org\/",
+        "vocabulary_label": "schema.org",
+        "local_name": "description",
+        "label": "description"
+    }
+}
