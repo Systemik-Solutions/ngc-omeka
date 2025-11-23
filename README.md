@@ -78,7 +78,8 @@ as needed.
 
 The configuration file include the following settings:
 
-- `db`: the database connection information for the Omeka S instance.
+- `db`: the database connection information for the Omeka S instance. Note that the database should be created 
+beforehand.
   - `host`: the database host (e.g., `localhost`).
   - `port`: the database port (e.g., `3306`).
   - `database`: the name of the database.
