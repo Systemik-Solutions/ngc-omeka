@@ -1,6 +1,37 @@
-# NGC Omeka S Distribution
+# Curated Collections
 
-Intro here...
+An enduring web publishing platform solution for Humanities, Arts and Social Sciences (HASS) and Indigenous research 
+data collections.
+
+The Omeka S distribution is provided to support researchers to build and maintain HASS digital research collections 
+consistent with FAIR principles. This distribution package for Omeka S prepared by 
+[Systemik Solutions](https://systemiksolutions.com/) bundles the Omeka S core, specified modules and themes, and 
+pre-defined content resources including vocabularies, taxonomies and resource templates.
+
+## Introduction
+
+A common requirement for HASS research is the ability to make digital research collections available online. This is 
+often a requirement of national grant funding but is also consistent with making the outputs of research open, 
+accessible and reusable. This has led to a proliferation of bespoke websites in a variety of commercial and 
+open-source platforms, which require specialist skills, are generally not cyber-secure and which are sustained on 
+fragile infrastructure. Current solutions are frequently short-lived due to high maintenance demands and 
+reinvent digital infrastructure for hosting collections. Unfortunately, a high number of important collections are 
+currently hosted on legacy platforms that are end-of-life. This makes it difficult for HASS and Indigenous researchers 
+to process, publish and share enduring collections of research consistent with FAIR (Findable, Accessible, 
+Interoperable, Reusable) principles.
+
+This Curated Collection Omeka S distribution addresses HASS researcher-specific metadata and functionality 
+requirements in a standard web publishing platform solution. This distribution will support most common types of 
+media natively (including text, images, audio, video, basic maps etc.) and may be extended to support linked storage of 
+bespoke types (e.g. 3D-models, blueprints, point clouds etc.). The basic Omeka S web interface is user-friendly and can 
+be administered with relatively little technical support and the platform is extensible through the use of plug-in 
+“themes” and “modules”. These projects are characterised as incremental, cumulative, granular, and collaborative 
+semantic annotation and linking of heterogenous content and data. Rather than follow a research paradigm of repeatable 
+experiments (text set-algorithm-result set) the research output is a node graph data structure and a persistent web 
+presence.
+
+Refer for detail on project objectives, refer to 
+[Curated Collections for Enduring HASS and Indigenous Data](https://ardc.edu.au/project/curated-collections-for-enduring-hass-indigenous-data/).
 
 ## System Requirements
 
