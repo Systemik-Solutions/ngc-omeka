@@ -399,6 +399,23 @@ INI;
                     continue;
                 }
                 $output->writeln("<info>Module {$moduleName}({$moduleVersion}) installed successfully.</info>");
+
+                // If the module is Common, reload the Omeka application. This is needed for following modules that may depend on it.
+                if ($moduleName === 'Common') {
+                    $output->writeln('Reloading Omeka application after Common module installation...');
+                    // Reload Omeka application.
+                    @Omeka::reloadApp();
+                    Omeka::authenticate();
+                    // Reload the service manager and module manager.
+                    /**
+                     * @var ServiceManager $serviceManager
+                     */
+                    $serviceManager = Omeka::getApp()->getServiceManager();
+                    /**
+                     * @var \Omeka\Module\Manager $moduleManager
+                     */
+                    $moduleManager = $serviceManager->get('Omeka\ModuleManager');
+                }
             }
         }
 
