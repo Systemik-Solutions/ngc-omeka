@@ -58,6 +58,16 @@
       "name": "Mapping",
       "url": "https://github.com/Systemik-Solutions/OmekaS-MappingExtensions/releases/download/v1.0.0/MappingExtensions-1.0.0.zip",
       "version": "1.0.0"
+    },
+    {
+      "name": "ZoteroCitations",
+      "url": "https://github.com/omeka-s-modules/ZoteroCitations/releases/download/v1.0.0/ZoteroCitations-1.0.0.zip",
+      "version": "1.0.0"
+    },
+    {
+      "name": "ZoteroImport",
+      "url": "https://github.com/omeka-s-modules/ZoteroImport/releases/download/v1.3.0/ZoteroImport-1.3.0.zip",
+      "version": "1.3.0"
     }
   ],
   "themes": [
