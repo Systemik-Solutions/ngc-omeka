@@ -19,6 +19,8 @@ class UpdateCodeCommand extends Command
 
     private array $themesUpdate = [];
 
+    private bool $hasMapping1 = false;
+
     protected function configure(): void
     {
         $this->setName('update:code');
@@ -68,6 +70,11 @@ class UpdateCodeCommand extends Command
         if (!empty($this->modulesUpdate)) {
             $output->writeln('Module updates available:');
             foreach ($this->modulesUpdate as $moduleID => $update) {
+                // Throw an error if the "MappingExtensions" module update is from version 1.0.0.
+                if ($moduleID === 'MappingExtensions' && $this->hasMapping1) {
+                    $output->writeln('<error>Module "MappingExtensions" update from version 1.0.0 requires a manual update before running the distribution update command. Please refer to the README.md and https://github.com/Systemik-Solutions/OmekaS-MappingExtensions#upgrading-from-100-to-101 for more details.</error>');
+                    return Command::FAILURE;
+                }
                 $output->writeln($moduleID . ': ' . $update['from'] . ' => ' . $update['to']);
             }
         } else {
@@ -144,6 +151,13 @@ class UpdateCodeCommand extends Command
          * @var \Omeka\Module\Manager $moduleManager
          */
         $moduleManager = $serviceManager->get('Omeka\ModuleManager');
+
+        // Check whether it involves an update of the "MappingExtensions" module from version 1.0.0.
+        $module = $moduleManager->getModule('Mapping');
+        if ($module && $module->getIni('version') === '1.0.0') {
+            $this->hasMapping1 = true;
+        }
+
         foreach ($manifest['modules'] as $moduleInfo) {
             $moduleID = $moduleInfo['name'];
             $latestVersion = $moduleInfo['version'];

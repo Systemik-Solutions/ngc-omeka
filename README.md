@@ -203,6 +203,15 @@ php console update:db -y
 
 Once it's done, log in to the Omeka S admin interface to verify that everything is working correctly.
 
+### Upgrading from v1.0.0 to v1.1.0
+
+The v1.1.0 release includes the update of the "MappingExtensions" module from version 1.0.0 to version 1.0.1, 
+which includes a fix for the namespace conflict. This changes the module directory name from `Mapping` to
+`MappingExtensions`. Therefore, the built-in update process of the distribution will not be able to handle 
+this change and you will need to manually update the module first before running the distribution update command. 
+For more information about the update, refer to the
+[MappingExtensions module page](https://github.com/Systemik-Solutions/OmekaS-MappingExtensions#upgrading-from-100-to-101).
+
 ## Contributing
 
 ### Distribution manifest
