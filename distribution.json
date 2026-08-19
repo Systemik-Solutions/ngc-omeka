@@ -78,6 +78,11 @@
       "name": "ResourceTemplateTabs",
       "url": "https://github.com/Systemik-Solutions/OmekaS-ResourceTemplateTabs/releases/download/v1.3.3/ResourceTemplateTabs-1.3.3.zip",
       "version": "1.3.3"
+    },
+    {
+      "name": "EditingExtensions",
+      "url": "https://github.com/Systemik-Solutions/OmekaS-EditingExtensions/releases/download/v1.2.3/EditingExtensions-1.2.3.zip",
+      "version": "1.2.3"
     }
   ],
   "themes": [
