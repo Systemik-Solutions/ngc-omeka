@@ -200,6 +200,44 @@ upgrade errored, you can re-run whichever step still needs to complete rather th
 If you run them separately, `update:code` must always be followed by `update:db`. Between the two, the instance has
 new code running against an un-migrated database.
 
+All of the update commands exit with a non-zero status if any component fails to update, so a scripted run can tell
+a clean update from a partial one.
+
+### Updating a single component
+
+Each part of the distribution can also be updated on its own. Unlike `update:code` and `update:db`, which split the
+update by *stage*, these split it by *component*, and each one does both the download and the matching database work
+in a single run:
+
+```bash
+php console update:core                       # the Omeka S core only
+php console update:module                     # every module in distribution.json
+php console update:module Oidc MergeItems     # only the named modules
+php console update:theme                      # every theme in distribution.json
+php console update:theme lively               # only the named themes
+```
+
+`distribution.json` remains the source of truth. Running `update:module` or `update:theme` without arguments covers
+only the modules and themes the distribution defines, so anything you added to the installation by hand is left
+alone. Naming a module or theme that is not in `distribution.json` is an error, so a typo fails loudly instead of
+quietly doing nothing.
+
+Themes have no database step — Omeka S picks them up straight off the filesystem — so `update:theme` never touches
+the database, and it is the one update command that needs neither `config/config.json` nor a working database
+connection.
+
+All three accept `-y` to skip the confirmation prompt, and `--force` to re-download a component that is already at
+the version in `distribution.json`:
+
+```bash
+php console update:module --force MergeItems   # re-lay a corrupted or hand-modified module
+php console update:theme --force               # reset every distribution theme to the manifest version
+```
+
+`--force` re-downloads the files only; it never re-runs a database upgrade that Omeka S considers already applied.
+Note that a module or theme is backed up and restored if its download fails, but the core is replaced in place with
+no automatic rollback.
+
 ### Upgrading from v1.0.0 to v1.1.0
 
 The v1.1.0 release includes the update of the "MappingExtensions" module from version 1.0.0 to version 1.0.1, 

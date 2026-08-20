@@ -78,6 +78,27 @@ class Inspector
     }
 
     /**
+     * Get the version of a module recorded in the database.
+     *
+     * This is the version the module's schema and data are at, which lags the version on disk
+     * between a code update and the module upgrade being run. Mirrors what
+     * \Omeka\Service\ModuleManagerFactory reads out of the "module" table.
+     *
+     * @param string $id The module identifier, i.e. its directory name.
+     * @return string|null Null when the module has no row, i.e. it has never been installed.
+     */
+    public function getInstalledModuleVersion(string $id): ?string
+    {
+        $statement = $this->getConnection()->prepare('SELECT version FROM module WHERE id = ?');
+        $statement->execute([$id]);
+        $value = $statement->fetchColumn();
+        if ($value === false || $value === null) {
+            return null;
+        }
+        return (string) $value;
+    }
+
+    /**
      * Check whether a theme directory exists.
      *
      * ThemeManagerFactory registers every directory under themes/, so the directory existing is
