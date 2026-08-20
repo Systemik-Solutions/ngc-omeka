@@ -12,15 +12,51 @@ class Omeka
 
     private static $authPassword = null;
 
+    private static bool $bootstrapLocked = false;
+
+    /**
+     * Prevent the application from being bootstrapped.
+     *
+     * Used while the distribution code is being updated. PHP cannot replace a class once it is
+     * declared, so an instance bootstrapped before the download would keep running the old core and
+     * module code for the rest of the process, silently applying the wrong upgrades. Locking makes
+     * an accidental bootstrap fail loudly instead.
+     */
+    public static function lockBootstrap(): void
+    {
+        self::$bootstrapLocked = true;
+    }
+
+    /**
+     * Allow the application to be bootstrapped again.
+     */
+    public static function unlockBootstrap(): void
+    {
+        self::$bootstrapLocked = false;
+    }
+
     /**
      * Bootstrap Omeka application.
+     *
+     * @throws \LogicException if bootstrapping is currently locked.
      */
     public static function bootstrap(): void
     {
+        if (self::$bootstrapLocked) {
+            throw new \LogicException(
+                'Omeka S must not be bootstrapped while the distribution code is being updated, because PHP '
+                . 'cannot reload classes that are already loaded. Read the installed versions with '
+                . 'App\Distribution\Inspector instead, and bootstrap once the download has finished.'
+            );
+        }
         $publicDir = __DIR__ . '/../public';
         $bootstrapFile = $publicDir . '/bootstrap.php';
         if (file_exists($bootstrapFile)) {
-            require $bootstrapFile;
+            // bootstrap.php defines OMEKA_PATH and registers the Omeka autoloader unconditionally, so
+            // skip it when reloading an application that has already been bootstrapped.
+            if (!defined('OMEKA_PATH')) {
+                require $bootstrapFile;
+            }
             self::$app = Application::init(require $publicDir . '/application/config/application.config.php');
         }
     }

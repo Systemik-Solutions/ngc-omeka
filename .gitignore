@@ -5,3 +5,7 @@
 /public
 /config/config.json
 /config/local.config.php
+
+# Claude
+.claude/
+CLAUDE.md

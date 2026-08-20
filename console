@@ -5,6 +5,10 @@ require __DIR__ . '/vendor/autoload.php';
 
 use App\Command\InstallCommand;
 use App\Command\UpdateCodeCommand;
+use App\Command\UpdateCoreCommand;
+use App\Command\UpdateModuleCommand;
+use App\Command\UpdateThemeCommand;
+use App\Command\UpdateCommand;
 use App\Command\UpdateDBCommand;
 use Symfony\Component\Console\Application;
 
@@ -12,7 +16,11 @@ $application = new Application('NGC Omeka S Distribution', '0.1.0');
 
 // Register commands
 $application->add(new InstallCommand());
+$application->add(new UpdateCommand());
 $application->add(new UpdateCodeCommand());
 $application->add(new UpdateDBCommand());
+$application->add(new UpdateCoreCommand());
+$application->add(new UpdateModuleCommand());
+$application->add(new UpdateThemeCommand());
 
 $application->run();
