@@ -161,47 +161,44 @@ git pull
 composer update
 ```
 
-Once it's done, run the update commands to update the installed Omeka S instance.
+Once it's done, run the update command to update the installed Omeka S instance:
+
+```bash
+php console update
+```
+
+You can pass the `-y` option to skip the confirmation prompt:
+
+```bash
+php console update -y
+```
+
+This checks for newer versions of the Omeka S core, modules, and themes based on the `distribution.json` file,
+downloads them, and then applies any pending database migrations and module installations or upgrades.
+
+Once it's done, log in to the Omeka S admin interface to verify that everything is working correctly.
 
 > [!NOTE]
-> The update commands only update the core, modules, and themes of the installed instance based on the changes in
+> The update command only updates the core, modules, and themes of the installed instance based on the changes in
 > `distribution.json`. Changes to contents such as vocabularies, taxonomies and resource templates will not be applied
 > to prevent data loss and inconsistencies. You may choose to update those contents manually via the Omeka S admin
 > interface if needed.
 
-### Updating the instance code
+### Updating the code and the database separately
 
-To update the instance code, run the following command:
-
-```bash
-php console update:code
-```
-
-You can pass the `-y` option to skip the confirmation prompt:
+The `update` command runs two steps in sequence, and each is also available on its own:
 
 ```bash
-php console update:code -y
+php console update:code   # download the core, module and theme updates
+php console update:db     # apply the pending database migrations and module upgrades
 ```
 
-This command will check for newer versions of the Omeka S core, modules, and themes based on the 
-`distribution.json` file and update the files accordingly.
+These are useful for recovery. If a run fails part way through, for example because a download failed or a module
+upgrade errored, you can re-run whichever step still needs to complete rather than starting over. Both accept the
+`-y` option.
 
-### Updating the instance database
-
-After updating the instance code, you will need to update the instance database to apply any pending database
-migrations. Run the following command:
-
-```bash
-php console update:db
-```
-
-You can pass the `-y` option to skip the confirmation prompt:
-
-```bash
-php console update:db -y
-```
-
-Once it's done, log in to the Omeka S admin interface to verify that everything is working correctly.
+If you run them separately, `update:code` must always be followed by `update:db`. Between the two, the instance has
+new code running against an un-migrated database.
 
 ### Upgrading from v1.0.0 to v1.1.0
 

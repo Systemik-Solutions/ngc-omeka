@@ -1,8 +1,8 @@
 <?php
 namespace App\Command;
 
+use App\Distribution\Inspector;
 use App\Helper;
-use App\Omeka;
 use GuzzleHttp\Client;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -20,6 +20,31 @@ class UpdateCodeCommand extends Command
     private array $themesUpdate = [];
 
     private bool $hasMapping1 = false;
+
+    private bool $cancelled = false;
+
+    private bool $chained = false;
+
+    /**
+     * Mark this run as part of the combined "update" command.
+     *
+     * Suppresses the notice telling the user to run "update:db", which that command does for them.
+     */
+    public function setChained(bool $chained): void
+    {
+        $this->chained = $chained;
+    }
+
+    /**
+     * Check whether the user declined the update at the confirmation prompt.
+     *
+     * Lets the "update" command tell a declined run apart from a completed one, since both report
+     * success.
+     */
+    public function wasCancelled(): bool
+    {
+        return $this->cancelled;
+    }
 
     protected function configure(): void
     {
@@ -56,12 +81,31 @@ class UpdateCodeCommand extends Command
             return Command::FAILURE;
         }
 
-        // Authenticate to Omeka S
-        Omeka::authenticate($config['admin']['email'], $config['admin']['password']);
+        // Read the installed versions without bootstrapping Omeka S. Bootstrapping here would load the
+        // core and module classes that are about to be replaced on disk, and PHP cannot reload them
+        // afterwards, so the "update:db" step would run against the code being replaced.
+        $inspector = new Inspector($rootDir);
+
+        // Verify the credentials up front so that bad ones are reported before a large download rather
+        // than after it. The update itself is authorised by Omeka once the code is in place.
+        try {
+            if (!$inspector->verifyCredentials($config['admin']['email'], $config['admin']['password'])) {
+                $output->writeln('<error>The admin credentials in config.json are not valid for this installation.</error>');
+                return Command::FAILURE;
+            }
+        } catch (\RuntimeException $e) {
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            return Command::FAILURE;
+        }
 
         // Audit current installation.
         $output->writeln('Checking for updates...');
-        $this->audit($manifest);
+        try {
+            $this->audit($inspector, $manifest);
+        } catch (\RuntimeException $e) {
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            return Command::FAILURE;
+        }
         if (!empty($this->coreUpdate)) {
             $output->writeln('Core update available: ' . $this->coreUpdate['from'] . ' => ' . $this->coreUpdate['to']);
         } else {
@@ -101,6 +145,7 @@ class UpdateCodeCommand extends Command
             $question = new ConfirmationQuestion('Would you like to continue? (y|n)', false);
 
             if (!$qHelper->ask($input, $output, $question)) {
+                $this->cancelled = true;
                 return Command::SUCCESS;
             }
         }
@@ -122,75 +167,68 @@ class UpdateCodeCommand extends Command
             $hasErrors = true;
         }
 
+        $followUp = $this->chained ? '' : ' Please run the "update:db" command to finish the update.';
         if ($hasErrors) {
-            $output->writeln('<comment>The distribution code has been updated with some errors. Please check the messages above. Please run the "update:db" command to finish the update.</comment>');
+            $output->writeln('<comment>The distribution code has been updated with some errors. Please check the messages above.' . $followUp . '</comment>');
         } else {
-            $output->writeln('<info>The distribution code has been updated successfully. Please run the "update:db" command to finish the update.</info>');
+            $output->writeln('<info>The distribution code has been updated successfully.' . $followUp . '</info>');
         }
 
         return Command::SUCCESS;
     }
 
-    private function audit($manifest): void
+    /**
+     * Compare the installed code against the distribution manifest.
+     *
+     * Reads the installed versions from disk rather than from a running Omeka S instance, so that the
+     * core and module classes stay unloaded until the new code is in place.
+     *
+     * @throws \RuntimeException if the installation cannot be read.
+     */
+    private function audit(Inspector $inspector, $manifest): void
     {
-        $serviceManager = Omeka::getApp()->getServiceManager();
-
-        // Check core update.
-        $status = $serviceManager->get('Omeka\Status');
-        $currentVersion = $status->getInstalledVersion();
+        // Check core update. Compared against the version of the code on disk, which is what determines
+        // whether a download is needed. The database version is handled separately by "update:db".
+        $currentVersion = $inspector->getCoreVersion();
         $latestVersion = $manifest['core']['version'];
-        if (version_compare($currentVersion, $latestVersion, '<')) {
+        if ($currentVersion === null || version_compare($currentVersion, $latestVersion, '<')) {
             $this->coreUpdate = [
                 'from' => $currentVersion,
                 'to' => $latestVersion,
             ];
         }
 
-        // Check modules update.
-        /**
-         * @var \Omeka\Module\Manager $moduleManager
-         */
-        $moduleManager = $serviceManager->get('Omeka\ModuleManager');
-
         // Check whether it involves an update of the "MappingExtensions" module from version 1.0.0.
-        $module = $moduleManager->getModule('Mapping');
-        if ($module && $module->getIni('version') === '1.0.0') {
+        if ($inspector->getModuleVersion('Mapping') === '1.0.0') {
             $this->hasMapping1 = true;
         }
 
+        // Check modules update.
         foreach ($manifest['modules'] as $moduleInfo) {
             $moduleID = $moduleInfo['name'];
             $latestVersion = $moduleInfo['version'];
-            $module = $moduleManager->getModule($moduleID);
-            if ($module) {
-                $currentVersion = $module->getIni('version');
-                if (version_compare($currentVersion, $latestVersion, '<')) {
-                    $this->modulesUpdate[$moduleID] = [
-                        'from' => $currentVersion,
-                        'to' => $latestVersion,
-                    ];
-                }
-            } else {
+            $currentVersion = $inspector->getModuleVersion($moduleID);
+            if ($currentVersion === null) {
                 // Module not installed.
                 $this->modulesUpdate[$moduleID] = [
                     'from' => null,
+                    'to' => $latestVersion,
+                ];
+            } elseif (version_compare($currentVersion, $latestVersion, '<')) {
+                $this->modulesUpdate[$moduleID] = [
+                    'from' => $currentVersion,
                     'to' => $latestVersion,
                 ];
             }
         }
 
         // Check themes update.
-        /**
-         * @var \Omeka\Site\Theme\Manager $themeManager
-         */
-        $themeManager = $serviceManager->get('Omeka\Site\ThemeManager');
         foreach ($manifest['themes'] as $themeInfo) {
             $themeID = $themeInfo['name'];
             $latestVersion = $themeInfo['version'];
-            if ($themeManager->isRegistered($themeID)) {
-                $theme = $themeManager->getTheme($themeID);
-                $currentVersion = $theme->getIni('version');
-                if (version_compare($currentVersion, $latestVersion, '<')) {
+            if ($inspector->isThemeRegistered($themeID)) {
+                $currentVersion = $inspector->getThemeVersion($themeID);
+                if ($currentVersion === null || version_compare($currentVersion, $latestVersion, '<')) {
                     $this->themesUpdate[$themeID] = [
                         'from' => $currentVersion,
                         'to' => $latestVersion,

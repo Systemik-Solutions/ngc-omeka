@@ -93,7 +93,7 @@ class InstallCommand extends Command
         }
 
         // Reload Omeka application to recognize newly installed modules.
-        @Omeka::reloadApp();
+        Omeka::reloadApp();
         Omeka::authenticate();
 
         // Create site
@@ -403,7 +403,7 @@ INI;
                 // If the module is Common, reload the Omeka application. This is needed for following modules that may depend on it.
                 if ($moduleName === 'Common') {
                     // Reload Omeka application.
-                    @Omeka::reloadApp();
+                    Omeka::reloadApp();
                     Omeka::authenticate();
                     // Reload the service manager and module manager.
                     /**
