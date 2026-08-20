@@ -18,6 +18,27 @@ use App\Omeka;
 class DbUpdater
 {
     /**
+     * Module states in which no install or upgrade can be applied, whatever the version numbers say.
+     *
+     * A module in one of these is not merely up to date - Omeka has refused to load it, so the
+     * pending database work for it silently cannot happen. Reporting that is the difference between
+     * a command that did nothing and a command that did nothing while saying it succeeded.
+     *
+     * Deliberately a method rather than a class constant: a constant referencing \Omeka\Module\Manager
+     * is resolved when this class is loaded, which is before Omeka has been bootstrapped and its
+     * autoloader registered.
+     */
+    private function getBlockedStates(): array
+    {
+        return [
+            \Omeka\Module\Manager::STATE_INVALID_MODULE,
+            \Omeka\Module\Manager::STATE_INVALID_INI,
+            \Omeka\Module\Manager::STATE_INVALID_OMEKA_VERSION,
+            \Omeka\Module\Manager::STATE_NOT_FOUND,
+        ];
+    }
+
+    /**
      * Audit the core database against the core code now loaded.
      *
      * @return array|null ["from" => ?string, "to" => string], or null when the database is current.
@@ -134,6 +155,29 @@ class DbUpdater
             $verb = $state === \Omeka\Module\Manager::STATE_NOT_INSTALLED ? 'installation' : 'update';
             throw new \RuntimeException("Module {$verb} failed: " . $e->getMessage(), 0, $e);
         }
+    }
+
+    /**
+     * Describe a module as the running module manager sees it.
+     *
+     * @return array|null Null when the module manager does not know the module at all. Otherwise
+     *   "state", whether that state is "blocked", the "ini" and "db" versions, and the module's
+     *   Omeka version constraint.
+     */
+    public function getModuleStatus(string $id): ?array
+    {
+        $module = $this->getModuleManager()->getModule($id);
+        if (!$module) {
+            return null;
+        }
+        $state = $module->getState();
+        return [
+            'state' => $state,
+            'blocked' => in_array($state, $this->getBlockedStates(), true),
+            'ini' => $module->getIni('version'),
+            'db' => $module->getDb('version'),
+            'constraint' => $module->getIni('omeka_version_constraint'),
+        ];
     }
 
     /**

@@ -102,12 +102,10 @@ class UpdateCoreCommand extends AbstractUpdateCommand
             }
         }
 
-        // First bootstrap of the process, now that the new core is on disk.
-        if (!Omeka::authenticate($credentials['email'], $credentials['password'])) {
-            $output->writeln('<error>Could not authenticate with Omeka S using the credentials in config.json.</error>');
-            return Command::FAILURE;
-        }
-
+        // Omeka is bootstrapped for the first time here, picking up the core that was just
+        // downloaded. Deliberately without authenticating: migrations need no identity, and Omeka's
+        // authentication fails anyway while its database is behind its code - which is precisely the
+        // state this command exists to resolve. The credentials were checked before the download.
         $dbUpdater = new DbUpdater();
         if ($dbUpdater->auditCore() !== null) {
             $output->writeln('Applying core updates...');

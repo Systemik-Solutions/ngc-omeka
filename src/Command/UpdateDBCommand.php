@@ -38,11 +38,6 @@ class UpdateDBCommand extends AbstractUpdateCommand
             return Command::FAILURE;
         }
 
-        if (!Omeka::authenticate($credentials['email'], $credentials['password'])) {
-            $output->writeln('<error>Could not authenticate with Omeka S using the credentials in config.json.</error>');
-            return Command::FAILURE;
-        }
-
         $output->writeln('Checking for database updates...');
         $dbUpdater = new DbUpdater();
         $coreUpdate = $dbUpdater->auditCore();
@@ -75,10 +70,12 @@ class UpdateDBCommand extends AbstractUpdateCommand
 
         $hasErrors = false;
 
+        $migratedCore = false;
         if ($coreUpdate) {
             $output->writeln('Applying core updates...');
             try {
                 $dbUpdater->updateCore();
+                $migratedCore = true;
                 $output->writeln('<info>Core update applied successfully.</info>');
             } catch (\RuntimeException $e) {
                 $output->writeln('<error>' . $e->getMessage() . '</error>');
@@ -87,6 +84,20 @@ class UpdateDBCommand extends AbstractUpdateCommand
         }
 
         if ($modulesUpdate) {
+            // Omeka builds a stub authentication service that rejects everything when it boots with
+            // migrations pending, and the service manager caches it for the life of the process. So
+            // once the migrations are done, re-init the application to get the real one back.
+            if ($migratedCore) {
+                Omeka::reloadApp();
+            }
+
+            // Only now, after the core migrations: Omeka cannot authenticate while its database is
+            // behind its code, and installing or upgrading a module needs an identity where a core
+            // migration does not.
+            if (!$this->authenticateWithOmeka($output, $credentials)) {
+                return Command::FAILURE;
+            }
+
             $moduleErrors = false;
             foreach (array_keys($modulesUpdate) as $moduleID) {
                 $output->writeln("Applying update for module {$moduleID}...");

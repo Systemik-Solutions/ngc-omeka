@@ -122,9 +122,10 @@ class UpdateModuleCommand extends AbstractUpdateCommand
         }
 
         if (!empty($plan)) {
-            // First bootstrap of the process, now that the new module code is on disk.
-            if (!Omeka::authenticate($credentials['email'], $credentials['password'])) {
-                $output->writeln('<error>Could not authenticate with Omeka S using the credentials in config.json.</error>');
+            // First bootstrap of the process, now that the new module code is on disk. Installing and
+            // upgrading modules runs Omeka code that expects an identity, so unlike the core
+            // migrations this step does need to authenticate.
+            if (!$this->authenticateWithOmeka($output, $credentials)) {
                 return Command::FAILURE;
             }
 
@@ -141,6 +142,15 @@ class UpdateModuleCommand extends AbstractUpdateCommand
                     $hasErrors = true;
                 }
             }
+
+            // A module Omeka refuses to load never reaches a state the audit above can act on, so
+            // the database work this command reported would be skipped in silence. Report it.
+            foreach (array_keys($plan) as $id) {
+                if (isset($pending[$id])) {
+                    continue;
+                }
+                $hasErrors = $this->reportIfBlocked($output, $dbUpdater, $id) || $hasErrors;
+            }
         }
 
         if ($hasErrors) {
@@ -151,5 +161,47 @@ class UpdateModuleCommand extends AbstractUpdateCommand
         $output->writeln('<info>The modules have been updated successfully.</info>');
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Report a module the running Omeka refuses to load.
+     *
+     * The pre-download audit compares version numbers only, so it will happily report pending
+     * database work for a module that Omeka then declines to load at all - most often because the
+     * new version of the module needs a newer core than the one installed. Left unreported, the
+     * command would apply nothing and still claim success.
+     *
+     * @return bool True when the module is blocked, i.e. the run has failed.
+     */
+    private function reportIfBlocked(OutputInterface $output, DbUpdater $dbUpdater, string $id): bool
+    {
+        $status = $dbUpdater->getModuleStatus($id);
+
+        if ($status === null) {
+            $output->writeln("<error>Module {$id} could not be found by Omeka S after the update.</error>");
+            return true;
+        }
+
+        if (!$status['blocked']) {
+            return false;
+        }
+
+        $output->writeln(sprintf(
+            '<error>Module %s is on disk at version %s but Omeka S reports it as "%s", so its database update could not be applied. It is still recorded at version %s.</error>',
+            $id,
+            $status['ini'] ?? 'unknown',
+            $status['state'],
+            $status['db'] ?? 'not installed'
+        ));
+
+        if ($status['state'] === \Omeka\Module\Manager::STATE_INVALID_OMEKA_VERSION) {
+            $output->writeln(sprintf(
+                '<comment>Module %s requires Omeka S %s. Run "php console update:core" first, then this command again.</comment>',
+                $id,
+                $status['constraint'] ?? 'a newer version'
+            ));
+        }
+
+        return true;
     }
 }
