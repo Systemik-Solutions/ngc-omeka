@@ -3,7 +3,10 @@
 namespace App\Health;
 
 use App\Database\Connection;
+use App\Distribution\Inspector;
 use App\Distribution\Manifest;
+use App\Health\Check\CoreVersionCheck;
+use App\Health\Check\MigrationCheck;
 use App\Health\Probe\DbProbe;
 use App\Health\Probe\HttpProbe;
 
@@ -24,6 +27,8 @@ class CheckerFactory
     private ?DbProbe $dbProbe = null;
 
     private ?HttpProbe $httpProbe = null;
+
+    private ?Inspector $inspector = null;
 
     public function __construct(
         private string $rootDir,
@@ -64,7 +69,10 @@ class CheckerFactory
             'http' => $this->httpProbe !== null,
         ]);
 
-        // Checks are registered here in Tasks 7 to 12.
+        $runner->add(new CoreVersionCheck($this->inspector()));
+        if ($this->dbProbe !== null) {
+            $runner->add(new MigrationCheck($this->rootDir, $this->dbProbe));
+        }
 
         return $runner;
     }
@@ -75,5 +83,10 @@ class CheckerFactory
     public function manifest(): Manifest
     {
         return new Manifest($this->rootDir);
+    }
+
+    public function inspector(): Inspector
+    {
+        return $this->inspector ??= new Inspector($this->rootDir, new Connection($this->rootDir));
     }
 }
