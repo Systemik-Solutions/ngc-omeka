@@ -26,7 +26,7 @@ class ApiCheck implements Check
     private const ID = 'api';
 
     public function __construct(
-        private HttpProbe $httpProbe,
+        private ?HttpProbe $httpProbe,
         private Inspector $inspector,
         private ?DbProbe $dbProbe,
         private int $slowMs,

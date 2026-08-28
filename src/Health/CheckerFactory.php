@@ -8,6 +8,7 @@ use App\Distribution\Manifest;
 use App\Health\Check\ApiCheck;
 use App\Health\Check\CoreVersionCheck;
 use App\Health\Check\ManifestCheck;
+use App\Health\Check\MediaCheck;
 use App\Health\Check\MigrationCheck;
 use App\Health\Check\ModuleStateCheck;
 use App\Health\Check\PageCheck;
@@ -77,11 +78,9 @@ class CheckerFactory
         $runner->add(new ManifestCheck($this->manifest(), $this->inspector()));
         $runner->add(new MigrationCheck($this->rootDir, $this->dbProbe));
         $runner->add(new ModuleStateCheck($this->rootDir, $this->inspector(), $this->dbProbe, $this->manifest()));
-
-        if ($this->httpProbe !== null) {
-            $runner->add(new ApiCheck($this->httpProbe, $this->inspector(), $this->dbProbe, $this->slowMs));
-            $runner->add(new PageCheck($this->httpProbe, $this->dbProbe, $this->slowMs));
-        }
+        $runner->add(new ApiCheck($this->httpProbe, $this->inspector(), $this->dbProbe, $this->slowMs));
+        $runner->add(new PageCheck($this->httpProbe, $this->dbProbe, $this->slowMs));
+        $runner->add(new MediaCheck($this->dbProbe, $this->httpProbe, $this->mediaSamples));
 
         return $runner;
     }

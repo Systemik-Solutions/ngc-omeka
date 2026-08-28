@@ -55,7 +55,7 @@ class PageCheck implements Check
     ];
 
     public function __construct(
-        private HttpProbe $httpProbe,
+        private ?HttpProbe $httpProbe,
         private ?DbProbe $dbProbe,
         private int $slowMs,
     ) {
