@@ -40,6 +40,43 @@ class HttpResult
     }
 
     /**
+     * The URIs this request was redirected through, oldest first.
+     *
+     * Guzzle records these in X-Guzzle-Redirect-History when track_redirects is on, one header value
+     * per hop; HttpProbe joins repeated header values with ", ", so they are split back apart here.
+     * A URI containing a comma would split wrongly, but the only consumer compares whole paths
+     * against a fixed list, so a mis-split can only fail to match - it cannot invent a match.
+     *
+     * An empty array means no redirect was followed, which is a fact about the request rather than
+     * a judgement about it: what the destination means is the caller's business.
+     *
+     * @return string[]
+     */
+    public function redirectHistory(): array
+    {
+        $header = $this->header('x-guzzle-redirect-history');
+        if ($header === null || trim($header) === '') {
+            return [];
+        }
+        return array_values(array_filter(array_map('trim', explode(',', $header)), static fn ($uri) => $uri !== ''));
+    }
+
+    /**
+     * The path of the last URI this request was redirected to, or null when it was not redirected.
+     *
+     * Null therefore means "went straight there", not "unknown".
+     */
+    public function finalPath(): ?string
+    {
+        $history = $this->redirectHistory();
+        if ($history === []) {
+            return null;
+        }
+        $path = parse_url((string) end($history), PHP_URL_PATH);
+        return is_string($path) ? $path : null;
+    }
+
+    /**
      * The declared body size.
      *
      * Read from the header rather than measured from the body, because HEAD responses have no body

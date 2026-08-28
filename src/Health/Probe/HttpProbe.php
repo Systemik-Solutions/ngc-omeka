@@ -14,6 +14,12 @@ use GuzzleHttp\Exception\GuzzleException;
  *
  * Guzzle is configured with http_errors disabled so that 4xx and 5xx arrive as responses to be
  * judged rather than as exceptions, leaving exceptions to mean an actual transport failure.
+ *
+ * Redirects are followed, and tracked. Following them is what makes /admin usable as a check at all
+ * (it ends at the login page), but a followed redirect is invisible in the final response, and where
+ * a request *ended up* is the only locale-independent way to recognise Omeka's maintenance and
+ * migrate routes - both of which answer HTTP 200. track_redirects makes Guzzle record every URI it
+ * followed in the X-Guzzle-Redirect-History response header, which HttpResult exposes.
  */
 class HttpProbe
 {
@@ -26,7 +32,7 @@ class HttpProbe
         $this->baseUrl = rtrim($baseUrl, '/');
         $this->client = new Client([
             'http_errors' => false,
-            'allow_redirects' => ['max' => 5, 'strict' => false, 'referer' => false, 'track_redirects' => false],
+            'allow_redirects' => ['max' => 5, 'strict' => false, 'referer' => false, 'track_redirects' => true],
             'timeout' => $timeoutSeconds,
             'connect_timeout' => $timeoutSeconds,
             'verify' => !$insecure,

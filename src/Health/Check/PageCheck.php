@@ -40,12 +40,8 @@ class PageCheck implements Check
      * version behind *and* a migration row missing does Omeka actually redirect: 302 to
      * `/maintenance` for non-admin routes, to `/migrate` for admin routes, and every one of `/`,
      * `/login`, `/admin` and `/s/<slug>` was observed to resolve (after HttpProbe follows the
-     * redirect) to HTTP 200 serving the maintenance page - `<title>My Omeka S Site</title>`,
-     * `<h2>Site under maintenance</h2>`. A status-only check would pass a fully dead instance on
-     * every path. The phrase "down for maintenance" is verbatim in both
-     * `omeka/maintenance/index.phtml` ("This site is down for maintenance...") and
-     * `omeka/migrate/index.phtml` ("...down for maintenance until you click the button below."),
-     * so checkPage() matches it in the body to catch what the status code alone would miss.
+     * redirect) to HTTP 200 serving the maintenance page. A status-only check would pass a fully
+     * dead instance on every path, so checkPage() looks at where the request ended up.
      */
     private const FIXED_PATHS = [
         '/' => [200],
@@ -53,6 +49,15 @@ class PageCheck implements Check
         '/admin' => [200],
         '/api' => [200],
     ];
+
+    /**
+     * The routes Omeka S diverts to when it will not serve the instance.
+     *
+     * `MvcListeners::redirectToMigration()` sends non-admin routes to /maintenance and admin routes
+     * to /migrate; the administrator-facing maintenance mode setting uses the same /maintenance
+     * route. Landing on either is the signal, whichever of those put us there.
+     */
+    private const DIVERTED_PATHS = ['/maintenance', '/migrate'];
 
     public function __construct(
         private ?HttpProbe $httpProbe,
@@ -127,23 +132,22 @@ class PageCheck implements Check
 
         // Confirmed live 2026-08-28: with setting.version behind the code *and* a migration row
         // missing (either alone is insufficient - the version-only case self-heals, see the
-        // FIXED_PATHS doc comment above), Omeka serves its maintenance page at HTTP 200 for /,
-        // /login, /admin and every site route alike. The phrase below is verbatim in both
-        // application/view/omeka/maintenance/index.phtml and .../migrate/index.phtml, so it
-        // catches both the public maintenance redirect and the admin migrate redirect. It cannot
-        // distinguish a pending migration from an administrator deliberately enabling maintenance
-        // mode - both render the same page - so the message reports what was observed rather than
-        // asserting a cause it cannot tell apart.
+        // FIXED_PATHS doc comment above), Omeka 302s every route to /maintenance or /migrate and
+        // then serves that page at HTTP 200. Where the request ended up is the primary test, for
+        // two reasons. It is locale-independent: both view scripts wrap their text in $translate(),
+        // so a body-string marker recognises an English instance and silently degrades to a
+        // status-only check - which is worthless here - on any other. And it is immune to page
+        // content: a home page carrying an announcement about scheduled maintenance would otherwise
+        // fail every route on this instance.
+        if ($this->isDiverted($result->finalPath())) {
+            return $this->divertedFailure($path, $result->finalPath(), $result->elapsedMs);
+        }
+
+        // Secondary signal only, for the hypothetical configuration that renders the maintenance
+        // page in place instead of redirecting to it. The phrase is verbatim in both
+        // application/view/omeka/maintenance/index.phtml and .../migrate/index.phtml, in English.
         if ($result->body !== null && stripos($result->body, 'down for maintenance') !== false) {
-            return Result::fail(
-                self::ID,
-                sprintf('Page %s: serving a maintenance or upgrade page, not the site', $path),
-                [
-                    'Omeka S returns HTTP 200 in this state, so the status code alone does not catch it.',
-                    'Either the database needs migrating (run "php console update:db") or the site is in maintenance mode.',
-                ],
-                $result->elapsedMs
-            );
+            return $this->divertedFailure($path, null, $result->elapsedMs);
         }
 
         if ($result->elapsedMs > $this->slowMs) {
@@ -156,5 +160,53 @@ class PageCheck implements Check
         }
 
         return Result::pass(self::ID, sprintf('Page %s: %d', $path, $result->statusCode), [], $result->elapsedMs);
+    }
+
+    /**
+     * Whether a request ended on one of Omeka's diverted routes.
+     *
+     * Null means no redirect was followed, which is the healthy case for every path here except
+     * /admin, whose redirect ends at /login.
+     *
+     * The suffix test carries instances served from a subdirectory, where the redirect target is
+     * /<base>/maintenance rather than /maintenance.
+     */
+    private function isDiverted(?string $finalPath): bool
+    {
+        if ($finalPath === null) {
+            return false;
+        }
+        $normalised = rtrim($finalPath, '/');
+        foreach (self::DIVERTED_PATHS as $route) {
+            if ($normalised === $route || str_ends_with($normalised, $route)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * The failure for a page that served the maintenance or upgrade page instead of the site.
+     *
+     * Deliberately cause-neutral. The same route is served for a pending migration and for an
+     * administrator-enabled maintenance mode, and nothing observable from outside tells the two
+     * apart, so the message reports what happened and offers both explanations.
+     *
+     * @param string|null $finalPath Where the request was redirected to, when it was redirected.
+     */
+    private function divertedFailure(string $path, ?string $finalPath, int $elapsedMs): Result
+    {
+        $detail = $finalPath === null
+            ? ['The page body is the maintenance or upgrade page.']
+            : [sprintf('Redirected to %s.', $finalPath)];
+        $detail[] = 'Omeka S returns HTTP 200 in this state, so the status code alone does not catch it.';
+        $detail[] = 'Either the database needs migrating (run "php console update:db") or the site is in maintenance mode.';
+
+        return Result::fail(
+            self::ID,
+            sprintf('Page %s: serving a maintenance or upgrade page, not the site', $path),
+            $detail,
+            $elapsedMs
+        );
     }
 }
