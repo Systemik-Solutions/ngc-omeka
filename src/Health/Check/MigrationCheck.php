@@ -19,7 +19,7 @@ class MigrationCheck implements Check
     /** How many missing migrations to name before summarising the rest. */
     private const MAX_LISTED = 10;
 
-    public function __construct(private string $rootDir, private DbProbe $dbProbe)
+    public function __construct(private string $rootDir, private ?DbProbe $dbProbe)
     {
     }
 

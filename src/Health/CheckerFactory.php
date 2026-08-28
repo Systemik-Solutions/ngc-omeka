@@ -73,10 +73,8 @@ class CheckerFactory
 
         $runner->add(new CoreVersionCheck($this->inspector()));
         $runner->add(new ManifestCheck($this->manifest(), $this->inspector()));
-        if ($this->dbProbe !== null) {
-            $runner->add(new MigrationCheck($this->rootDir, $this->dbProbe));
-            $runner->add(new ModuleStateCheck($this->rootDir, $this->inspector(), $this->dbProbe, $this->manifest()));
-        }
+        $runner->add(new MigrationCheck($this->rootDir, $this->dbProbe));
+        $runner->add(new ModuleStateCheck($this->rootDir, $this->inspector(), $this->dbProbe, $this->manifest()));
 
         return $runner;
     }

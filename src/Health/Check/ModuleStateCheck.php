@@ -22,7 +22,7 @@ class ModuleStateCheck implements Check
     public function __construct(
         private string $rootDir,
         private Inspector $inspector,
-        private DbProbe $dbProbe,
+        private ?DbProbe $dbProbe,
         private Manifest $manifest,
     ) {
     }

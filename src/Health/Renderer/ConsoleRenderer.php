@@ -20,7 +20,7 @@ class ConsoleRenderer
         'WARN' => 'yellow',
         'FAIL' => 'red',
         'INFO' => 'cyan',
-        'SKIP' => 'comment',
+        'SKIP' => 'gray',
     ];
 
     /**
