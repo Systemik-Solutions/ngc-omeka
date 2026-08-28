@@ -10,6 +10,7 @@ use App\Health\Check\CoreVersionCheck;
 use App\Health\Check\ManifestCheck;
 use App\Health\Check\MigrationCheck;
 use App\Health\Check\ModuleStateCheck;
+use App\Health\Check\PageCheck;
 use App\Health\Probe\DbProbe;
 use App\Health\Probe\HttpProbe;
 
@@ -79,6 +80,7 @@ class CheckerFactory
 
         if ($this->httpProbe !== null) {
             $runner->add(new ApiCheck($this->httpProbe, $this->inspector(), $this->dbProbe, $this->slowMs));
+            $runner->add(new PageCheck($this->httpProbe, $this->dbProbe, $this->slowMs));
         }
 
         return $runner;
