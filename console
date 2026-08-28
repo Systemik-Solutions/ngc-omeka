@@ -3,6 +3,7 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
+use App\Command\HealthCheckCommand;
 use App\Command\InstallCommand;
 use App\Command\UpdateCodeCommand;
 use App\Command\UpdateCoreCommand;
@@ -22,5 +23,6 @@ $application->add(new UpdateDBCommand());
 $application->add(new UpdateCoreCommand());
 $application->add(new UpdateModuleCommand());
 $application->add(new UpdateThemeCommand());
+$application->add(new HealthCheckCommand());
 
 $application->run();
