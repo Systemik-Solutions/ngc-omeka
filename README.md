@@ -87,6 +87,9 @@ beforehand.
   - `password`: the database password.
 - `apache_user`: The linux user that runs the web server (e.g., `www-data` or `httpd`). This is used to set the correct
   permissions on certain directories.
+- `url`: The base URL the instance is served at, with no trailing slash (e.g., `https://collections.example.org`).
+  This is optional and used only by the health checker (see [Health Check](#health-check) below). Without it, the
+  health checker skips every check that needs an HTTP request and still runs the database and filesystem checks.
 - `admin`: The initial Omeka S user information.
   - `name`: the name of the user.
   - `email`: the user email address.
@@ -176,6 +179,19 @@ php console update -y
 This checks for newer versions of the Omeka S core, modules, and themes based on the `distribution.json` file,
 downloads them, and then applies any pending database migrations and module installations or upgrades.
 
+Pass `--health-check` to verify the instance once the update has been applied:
+
+```bash
+php console update --health-check
+```
+
+This captures the resource counts before the download, runs the full health check suite afterwards,
+and reports both the check results and what changed. It is off by default.
+
+If a check fails, the command exits with a non-zero status. **The update has still been applied** —
+nothing is rolled back, and the failures describe what to fix. If the update itself fails, the health
+checks are skipped and the update's own error is reported instead.
+
 Once it's done, log in to the Omeka S admin interface to verify that everything is working correctly.
 
 > [!NOTE]
@@ -246,6 +262,57 @@ which includes a fix for the namespace conflict. This changes the module directo
 this change and you will need to manually update the module first before running the distribution update command. 
 For more information about the update, refer to the
 [MappingExtensions module page](https://github.com/Systemik-Solutions/OmekaS-MappingExtensions#upgrading-from-100-to-101).
+
+## Health Check
+
+The health checker verifies that an installed instance is working. Run it on its own, or as part of an
+update with `php console update --health-check`.
+
+```bash
+php console health:check
+php console health:check --url https://collections.example.org
+php console health:check --json
+```
+
+It runs seven checks:
+
+| Check | Needs | What it verifies |
+|---|---|---|
+| `core.version` | database | The core version on disk matches the version the database is migrated to. |
+| `core.migrations` | database | Every migration file shipped with the core has been applied. |
+| `modules.state` | database | Every module's `module.ini` version matches its row in the `module` table. Also reports deactivated modules and modules that are not part of the distribution. |
+| `distribution.manifest` | nothing | Every component is at the version `distribution.json` names. |
+| `api` | URL | The API answers, reports the same core version the code on disk has, and agrees with the database about how many public items exist. |
+| `pages` | URL | The home page, login page, admin route, API index and every public site's home and item browse page all respond. |
+| `media` | URL and database | A sample of stored files and their thumbnails are being served. |
+
+The checks that need a URL are skipped when none is configured, so the command is useful with no setup
+at all — it still reports version skew, pending migrations and manifest drift.
+
+Omeka S serves HTTP 200 on every one of those pages even while its database still needs migrating —
+it renders a maintenance page rather than erroring — so the `pages` check inspects the response body,
+not just the status code. That is the single best reason to run a health check right after an update.
+
+Results carry one of five statuses. `FAIL` means something is broken and produces a non-zero exit code.
+`WARN` is advisory — a slow page, or drift from the manifest — and does not, unless `--strict` is
+passed. `INFO` reports a fact with no judgement, such as which modules are deactivated. `SKIP` means a
+check could not run because a probe was not configured, which is different from a check that ran and
+failed.
+
+### Options
+
+| Option | Default | Effect |
+|---|---|---|
+| `--url` | the `url` key in `config.json` | The instance base URL. |
+| `--json` | off | Emit the report as JSON instead of text. |
+| `--strict` | off | Treat warnings as failures for the exit code. |
+| `--media-samples` | 5 | How many media records to sample. |
+| `--slow-ms` | 5000 | Response time above which a request warns. |
+| `--timeout` | 30 | HTTP request timeout, in seconds. |
+| `--insecure` | off | Skip TLS certificate verification, for staging environments with self-signed certificates. |
+
+The health checker never writes anything and never changes the instance. It needs no admin credentials,
+and works whether or not `config/config.json` exists.
 
 ## Contributing
 
