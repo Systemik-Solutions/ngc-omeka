@@ -7,6 +7,7 @@
     "database": "ngc_omeka"
   },
   "apache_user": "www-data",
+  "url": "http://localhost",
   "admin": {
     "name": "ngcadmin",
     "email": "ngcadmin@example.com",

@@ -2,13 +2,16 @@
 
 namespace App\Distribution;
 
+use App\Database\Connection;
+
 /**
  * Reads the state of an installed Omeka S instance without bootstrapping it.
  *
  * The update commands have to audit the installation *before* downloading new code. Bootstrapping
  * Omeka to do that would load its classes into the running process, and PHP cannot replace a class
  * once it is declared, so the freshly downloaded code would be ignored for the rest of the run.
- * Every read here therefore goes straight to the filesystem or to a raw database connection.
+ * Every read here goes straight to the filesystem or to a raw database connection
+ * (App\Database\Connection), never through Omeka.
  *
  * This deliberately mirrors what Omeka itself does: \Omeka\Mvc\Status for the core versions,
  * \Omeka\Service\ModuleManagerFactory for the modules and \Omeka\Service\ThemeManagerFactory for
@@ -18,11 +21,12 @@ class Inspector
 {
     private string $publicDir;
 
-    private ?\PDO $connection = null;
+    private Connection $connection;
 
-    public function __construct(string $rootDir)
+    public function __construct(string $rootDir, ?Connection $connection = null)
     {
         $this->publicDir = $rootDir . '/public';
+        $this->connection = $connection ?? new Connection($rootDir);
     }
 
     /**
@@ -55,7 +59,7 @@ class Inspector
      */
     public function getInstalledCoreVersion(): ?string
     {
-        $statement = $this->getConnection()->prepare('SELECT value FROM setting WHERE id = ?');
+        $statement = $this->connection->pdo()->prepare('SELECT value FROM setting WHERE id = ?');
         $statement->execute(['version']);
         $value = $statement->fetchColumn();
         if ($value === false) {
@@ -67,10 +71,26 @@ class Inspector
     }
 
     /**
+     * Check whether a module directory exists.
+     *
+     * The companion to getModuleVersion(), which returns null both for a module that is not there
+     * and for one that is there with an unreadable config/module.ini. Those need different advice -
+     * install it, versus repair it - so callers that would otherwise report the wrong one ask this
+     * first. Mirrors isThemeRegistered().
+     *
+     * @param string $id The module identifier, i.e. its directory name.
+     */
+    public function isModuleRegistered(string $id): bool
+    {
+        return is_dir($this->publicDir . '/modules/' . $id);
+    }
+
+    /**
      * Get the version of a module on disk.
      *
      * @param string $id The module identifier, i.e. its directory name.
-     * @return string|null Null when the module is absent or its INI is unusable.
+     * @return string|null Null when the module is absent or its INI is unusable. Use
+     *   isModuleRegistered() to tell those apart.
      */
     public function getModuleVersion(string $id): ?string
     {
@@ -89,7 +109,7 @@ class Inspector
      */
     public function getInstalledModuleVersion(string $id): ?string
     {
-        $statement = $this->getConnection()->prepare('SELECT version FROM module WHERE id = ?');
+        $statement = $this->connection->pdo()->prepare('SELECT version FROM module WHERE id = ?');
         $statement->execute([$id]);
         $value = $statement->fetchColumn();
         if ($value === false || $value === null) {
@@ -115,7 +135,8 @@ class Inspector
      * Get the version of a theme on disk.
      *
      * @param string $id The theme identifier, i.e. its directory name.
-     * @return string|null Null when the theme is absent or its INI is unusable.
+     * @return string|null Null when the theme is absent or its INI is unusable. Use
+     *   isThemeRegistered() to tell those apart.
      */
     public function getThemeVersion(string $id): ?string
     {
@@ -133,7 +154,7 @@ class Inspector
      */
     public function verifyCredentials(string $email, string $password): bool
     {
-        $statement = $this->getConnection()->prepare('SELECT password_hash, is_active FROM user WHERE email = ?');
+        $statement = $this->connection->pdo()->prepare('SELECT password_hash, is_active FROM user WHERE email = ?');
         $statement->execute([$email]);
         $user = $statement->fetch(\PDO::FETCH_ASSOC);
         if (!$user || !$user['is_active'] || $user['password_hash'] === null) {
@@ -158,84 +179,5 @@ class Inspector
             return null;
         }
         return (string) $ini['info']['version'];
-    }
-
-    /**
-     * Get the database connection, opening it on first use.
-     *
-     * @throws \RuntimeException if the connection details are missing or the connection fails.
-     */
-    private function getConnection(): \PDO
-    {
-        if ($this->connection !== null) {
-            return $this->connection;
-        }
-
-        $params = $this->getConnectionParams();
-
-        $dsn = 'mysql:';
-        if (!empty($params['unix_socket'])) {
-            $dsn .= 'unix_socket=' . $params['unix_socket'];
-        } else {
-            $dsn .= 'host=' . ($params['host'] ?? 'localhost');
-            if (!empty($params['port'])) {
-                $dsn .= ';port=' . $params['port'];
-            }
-        }
-        $dsn .= ';dbname=' . ($params['dbname'] ?? '') . ';charset=utf8mb4';
-
-        try {
-            $this->connection = new \PDO($dsn, $params['user'] ?? '', $params['password'] ?? '', [
-                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-            ]);
-        } catch (\PDOException $e) {
-            throw new \RuntimeException('Could not connect to the Omeka S database: ' . $e->getMessage());
-        }
-
-        return $this->connection;
-    }
-
-    /**
-     * Get the database connection details.
-     *
-     * Mirrors public/application/config/application.config.php: the details come from
-     * config/database.ini, and the OMEKA_DB_CONNECTION_URL environment variable overrides them.
-     *
-     * @throws \RuntimeException if no connection details can be found.
-     */
-    private function getConnectionParams(): array
-    {
-        $params = [];
-
-        $iniFile = $this->publicDir . '/config/database.ini';
-        if (is_readable($iniFile)) {
-            $ini = @parse_ini_file($iniFile);
-            if (is_array($ini)) {
-                $params = $ini;
-            }
-        }
-
-        $url = getenv('OMEKA_DB_CONNECTION_URL') ?: ($params['url'] ?? null);
-        if ($url) {
-            $parsed = parse_url($url);
-            if ($parsed === false) {
-                throw new \RuntimeException('The Omeka S database connection URL could not be parsed.');
-            }
-            $params = [
-                'host' => $parsed['host'] ?? 'localhost',
-                'port' => $parsed['port'] ?? null,
-                'user' => isset($parsed['user']) ? rawurldecode($parsed['user']) : null,
-                'password' => isset($parsed['pass']) ? rawurldecode($parsed['pass']) : null,
-                'dbname' => isset($parsed['path']) ? ltrim($parsed['path'], '/') : null,
-            ];
-        }
-
-        if (empty($params['dbname'])) {
-            throw new \RuntimeException(
-                'Omeka S database connection details not found. Expected them in public/config/database.ini.'
-            );
-        }
-
-        return $params;
     }
 }

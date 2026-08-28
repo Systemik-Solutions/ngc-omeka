@@ -2,6 +2,12 @@
 
 namespace App\Command;
 
+use App\Database\Connection;
+use App\Distribution\Inspector;
+use App\Health\CheckerFactory;
+use App\Health\Probe\DbProbe;
+use App\Health\Renderer\ConsoleRenderer;
+use App\Health\Snapshot;
 use App\Omeka;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -26,12 +32,16 @@ class UpdateCommand extends Command
         $this->setName('update');
         $this->setDescription('Updates the NGC Omeka S distribution code and applies the pending database updates.');
         $this->addOption('yes', 'y', InputOption::VALUE_NONE, 'Automatic yes to prompts; assume "yes" as answer to all prompts and run non-interactively.');
+        $this->addOption('health-check', null, InputOption::VALUE_NONE, 'Run the health checks after the update and report the result.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $autoConfirm = $input->getOption('yes');
+        $healthCheck = (bool) $input->getOption('health-check');
         $application = $this->getApplication();
+
+        $before = null;
 
         /**
          * @var \App\Command\UpdateCodeCommand $codeCommand
@@ -50,12 +60,24 @@ class UpdateCommand extends Command
         // fails with an explanation rather than silently updating against stale code.
         Omeka::lockBootstrap();
         try {
+            // Taken inside the lock window, not before it. The snapshot reads raw PDO and the
+            // filesystem only, so it is safe here today - but the lock is the mechanism that would
+            // catch it if that ever stopped being true, and a snapshot taken outside the window is
+            // a snapshot the guard does not cover.
+            if ($healthCheck) {
+                $before = $this->captureSnapshot();
+            }
             $exitCode = $codeCommand->run($codeInput, $output);
         } finally {
             Omeka::unlockBootstrap();
         }
 
         if ($exitCode !== Command::SUCCESS) {
+            if ($healthCheck) {
+                $output->writeln('');
+                $output->writeln('<comment>The update did not finish, so the health checks were not run.</comment>');
+                $output->writeln('<comment>Run "php console health:check" for a damage assessment.</comment>');
+            }
             return $exitCode;
         }
 
@@ -73,6 +95,75 @@ class UpdateCommand extends Command
         $dbInput = new ArrayInput(['command' => 'update:db', '--yes' => true]);
         $dbInput->setInteractive(false);
 
-        return $dbCommand->run($dbInput, $output);
+        $dbExitCode = $dbCommand->run($dbInput, $output);
+
+        if (!$healthCheck) {
+            return $dbExitCode;
+        }
+
+        if ($dbExitCode !== Command::SUCCESS) {
+            $output->writeln('');
+            $output->writeln('<comment>The update did not finish, so the health checks were not run.</comment>');
+            $output->writeln('<comment>Run "php console health:check" for a damage assessment.</comment>');
+            return $dbExitCode;
+        }
+
+        return $this->runHealthCheck($output, $before);
+    }
+
+    /**
+     * Take a state snapshot, or null when there is no database to read.
+     *
+     * Uses raw PDO and the filesystem only, so it is safe to call before the code download.
+     */
+    private function captureSnapshot(): ?Snapshot
+    {
+        $rootDir = dirname(__DIR__, 2);
+        $connection = new Connection($rootDir);
+        if (!$connection->isConfigured()) {
+            return null;
+        }
+        try {
+            return Snapshot::capture(new DbProbe($connection), new Inspector($rootDir, $connection));
+        } catch (\RuntimeException $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Run the health checks and report, after the update has been applied.
+     *
+     * A non-zero return here means the update was applied and then failed verification. The output
+     * has to say so: read as "nothing happened", it would send someone looking for a rollback that
+     * never occurred.
+     */
+    private function runHealthCheck(OutputInterface $output, ?Snapshot $before): int
+    {
+        $rootDir = dirname(__DIR__, 2);
+
+        $output->writeln('');
+        $output->writeln('<info>Running the health checks.</info>');
+        $output->writeln('');
+
+        // Base URL and check options both come from CheckerFactory, so that this entry point and
+        // "health:check" cannot drift apart on either.
+        $factory = new CheckerFactory($rootDir, CheckerFactory::baseUrlFromConfig($rootDir));
+        $report = $factory->createRunner()->run();
+
+        $after = $this->captureSnapshot();
+        if ($before !== null && $after !== null) {
+            $report->add(...$after->diff($before));
+        }
+
+        (new ConsoleRenderer())->render($report, $output);
+
+        if ($report->hasFailures()) {
+            $output->writeln('');
+            $output->writeln('<error>The update was applied, but the instance failed its health checks.</error>');
+            $output->writeln('<error>Nothing has been rolled back. Address the failures above.</error>');
+            return Command::FAILURE;
+        }
+
+        return Command::SUCCESS;
     }
 }
