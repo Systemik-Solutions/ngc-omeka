@@ -5,6 +5,7 @@ namespace App\Health;
 use App\Database\Connection;
 use App\Distribution\Inspector;
 use App\Distribution\Manifest;
+use App\Health\Check\ApiCheck;
 use App\Health\Check\CoreVersionCheck;
 use App\Health\Check\ManifestCheck;
 use App\Health\Check\MigrationCheck;
@@ -75,6 +76,10 @@ class CheckerFactory
         $runner->add(new ManifestCheck($this->manifest(), $this->inspector()));
         $runner->add(new MigrationCheck($this->rootDir, $this->dbProbe));
         $runner->add(new ModuleStateCheck($this->rootDir, $this->inspector(), $this->dbProbe, $this->manifest()));
+
+        if ($this->httpProbe !== null) {
+            $runner->add(new ApiCheck($this->httpProbe, $this->inspector(), $this->dbProbe, $this->slowMs));
+        }
 
         return $runner;
     }
