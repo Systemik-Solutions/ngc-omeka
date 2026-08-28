@@ -30,7 +30,7 @@ class ConsoleRenderer
         'api' => 'API',
     ];
 
-    public function render(Report $report, OutputInterface $output): void
+    public function render(Report $report, OutputInterface $output, bool $strict = false): void
     {
         $groups = [];
         foreach ($report->all() as $result) {
@@ -48,7 +48,7 @@ class ConsoleRenderer
             $output->writeln('');
         }
 
-        $this->renderSummary($report, $output);
+        $this->renderSummary($report, $output, $strict);
     }
 
     private function groupOf(Result $result): string
@@ -71,7 +71,7 @@ class ConsoleRenderer
         return $result->message . ' (' . $result->durationMs . 'ms)';
     }
 
-    private function renderSummary(Report $report, OutputInterface $output): void
+    private function renderSummary(Report $report, OutputInterface $output, bool $strict): void
     {
         $tally = $report->tally();
         $parts = [];
@@ -88,6 +88,8 @@ class ConsoleRenderer
 
         if ($tally[Status::FAIL->value] > 0) {
             $output->writeln('<fg=red;options=bold>Instance unhealthy.</>');
+        } elseif ($tally[Status::WARN->value] > 0 && $strict) {
+            $output->writeln('<fg=red;options=bold>Instance unhealthy: --strict treats warnings as failures.</>');
         } elseif ($tally[Status::WARN->value] > 0) {
             $output->writeln('<fg=yellow>Instance healthy, with warnings.</>');
         } else {

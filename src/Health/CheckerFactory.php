@@ -7,6 +7,7 @@ use App\Distribution\Inspector;
 use App\Distribution\Manifest;
 use App\Health\Check\CoreVersionCheck;
 use App\Health\Check\MigrationCheck;
+use App\Health\Check\ModuleStateCheck;
 use App\Health\Probe\DbProbe;
 use App\Health\Probe\HttpProbe;
 
@@ -72,6 +73,7 @@ class CheckerFactory
         $runner->add(new CoreVersionCheck($this->inspector()));
         if ($this->dbProbe !== null) {
             $runner->add(new MigrationCheck($this->rootDir, $this->dbProbe));
+            $runner->add(new ModuleStateCheck($this->rootDir, $this->inspector(), $this->dbProbe, $this->manifest()));
         }
 
         return $runner;

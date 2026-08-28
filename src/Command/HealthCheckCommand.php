@@ -52,7 +52,7 @@ class HealthCheckCommand extends Command
         if ($json) {
             (new JsonRenderer())->render($report, $factory->baseUrl(), $strict, $output);
         } else {
-            (new ConsoleRenderer())->render($report, $output);
+            (new ConsoleRenderer())->render($report, $output, $strict);
         }
 
         return $report->exitCode($strict);
