@@ -286,12 +286,20 @@ It runs seven checks:
 | `pages` | URL | The home page, login page, admin route, API index and every public site's home and item browse page all respond. |
 | `media` | URL and database | A sample of stored files and their thumbnails are being served. |
 
-The checks that need a URL are skipped when none is configured, so the command is useful with no setup
-at all — it still reports version skew, pending migrations and manifest drift.
+The checks that need a URL are skipped when none is configured, and the checks that need a database are
+skipped when there is no `public/config/database.ini`, as on a code-only install. So the command is
+useful with no setup at all: with a database but no URL it still reports version skew, pending
+migrations and manifest drift, and with neither it still reports manifest drift.
 
-Omeka S serves HTTP 200 on every one of those pages even while its database still needs migrating —
-it renders a maintenance page rather than erroring — so the `pages` check inspects the response body,
-not just the status code. That is the single best reason to run a health check right after an update.
+An Omeka S instance can answer HTTP 200 on every one of those pages while refusing to serve the site,
+rendering a maintenance page instead of erroring. Reaching that state takes **both** a `setting.version`
+behind the code **and** a missing row in the `migration` table — neither on its own is enough, because a
+stale `setting.version` alone silently repairs itself on the next request. In that state Omeka redirects
+every route to `/maintenance`, or to `/migrate` for admin routes, so the `pages` check tests where each
+request ended up rather than only the status it came back with. Testing the redirect target rather than a
+phrase in the page body keeps the check working on a non-English instance, where the page text is
+translated, and stops a home page that merely mentions scheduled maintenance from failing every route.
+That is the single best reason to run a health check right after an update.
 
 Results carry one of five statuses. `FAIL` means something is broken and produces a non-zero exit code.
 `WARN` is advisory — a slow page, or drift from the manifest — and does not, unless `--strict` is
