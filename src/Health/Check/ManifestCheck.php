@@ -15,12 +15,21 @@ use App\Health\Result;
  * releases. A missing core is the exception, because nothing else can be true without it.
  *
  * Reads only the code side, so it needs no database and no URL and runs in every configuration.
+ *
+ * The manifest arrives as a closure rather than an object because reading distribution.json can
+ * throw - it is a hand-edited file, and one JSON typo is enough. Constructing it here, inside run(),
+ * puts that throw inside the Runner's try/catch, where it becomes a FAIL for this check and leaves
+ * the other six to report. Constructed eagerly in the factory it would escape the Runner entirely
+ * and take the whole command down with a stack trace.
  */
 class ManifestCheck implements Check
 {
     private const ID = 'distribution.manifest';
 
-    public function __construct(private Manifest $manifest, private Inspector $inspector)
+    /**
+     * @param \Closure(): Manifest $manifest Reads distribution.json when the check runs.
+     */
+    public function __construct(private \Closure $manifest, private Inspector $inspector)
     {
     }
 
@@ -41,7 +50,9 @@ class ManifestCheck implements Check
 
     public function run(): array
     {
-        $core = $this->manifest->getCore();
+        $manifest = ($this->manifest)();
+
+        $core = $manifest->getCore();
         $coreOnDisk = $this->inspector->getCoreVersion();
 
         if ($coreOnDisk === null) {
@@ -57,30 +68,39 @@ class ManifestCheck implements Check
             $drift[] = sprintf('core: manifest %s, disk %s', $core['version'], $coreOnDisk);
         }
 
-        foreach ($this->manifest->getModules() as $module) {
+        // A missing version is asked about through isModuleRegistered()/isThemeRegistered() rather
+        // than inferred, because the INI readers return null alike for "not there" and "there but
+        // unreadable". Reporting the second as the first sends someone to reinstall a component
+        // that is already present, and passing over it in silence reports the instance conformant
+        // while a component is broken.
+        foreach ($manifest->getModules() as $module) {
             $onDisk = $this->inspector->getModuleVersion($module['name']);
             if ($onDisk === null) {
-                $drift[] = sprintf('module %s: manifest %s, not on disk', $module['name'], $module['version']);
+                $drift[] = $this->inspector->isModuleRegistered($module['name'])
+                    ? sprintf('module %s: present on disk but its module.ini could not be read', $module['name'])
+                    : sprintf('module %s: manifest %s, not on disk', $module['name'], $module['version']);
             } elseif ($onDisk !== $module['version']) {
                 $drift[] = sprintf('module %s: manifest %s, disk %s', $module['name'], $module['version'], $onDisk);
             }
         }
 
-        foreach ($this->manifest->getThemes() as $theme) {
+        foreach ($manifest->getThemes() as $theme) {
             if (!$this->inspector->isThemeRegistered($theme['name'])) {
                 $drift[] = sprintf('theme %s: manifest %s, not on disk', $theme['name'], $theme['version']);
                 continue;
             }
             $onDisk = $this->inspector->getThemeVersion($theme['name']);
-            if ($onDisk !== null && $onDisk !== $theme['version']) {
+            if ($onDisk === null) {
+                $drift[] = sprintf('theme %s: present on disk but its theme.ini could not be read', $theme['name']);
+            } elseif ($onDisk !== $theme['version']) {
                 $drift[] = sprintf('theme %s: manifest %s, disk %s', $theme['name'], $theme['version'], $onDisk);
             }
         }
 
         $summary = sprintf(
             'core, %d module(s) and %d theme(s)',
-            count($this->manifest->getModules()),
-            count($this->manifest->getThemes())
+            count($manifest->getModules()),
+            count($manifest->getThemes())
         );
 
         if ($drift === []) {

@@ -49,8 +49,11 @@ class MediaCheck implements Check
     {
         $media = $this->dbProbe->sampleMedia($this->samples);
 
+        // INFO, not SKIP. SKIP means a required probe was not configured; both probes are configured
+        // here, the check ran, and it found the instance has no files. Reporting instance state as
+        // SKIP would give that status two meanings and make the documented one untrue.
         if ($media === []) {
-            return [Result::skip(self::ID, 'Media files: no stored files to sample', [
+            return [Result::info(self::ID, 'Media files: no stored files to sample', [
                 'The media table has no rows with a storage_id.',
             ])];
         }

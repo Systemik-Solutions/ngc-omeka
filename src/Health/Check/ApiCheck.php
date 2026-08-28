@@ -90,7 +90,10 @@ class ApiCheck implements Check
             );
         }
 
-        $decoded = json_decode((string) $result->body, true);
+        // No assoc flag: with it, a JSON object decodes to an array too and the test passes for a
+        // payload that is not the list this endpoint promises. Without it an object is a stdClass,
+        // so only a genuine JSON array satisfies is_array().
+        $decoded = json_decode((string) $result->body);
         if (!is_array($decoded)) {
             return Result::fail(
                 self::ID,

@@ -71,10 +71,26 @@ class Inspector
     }
 
     /**
+     * Check whether a module directory exists.
+     *
+     * The companion to getModuleVersion(), which returns null both for a module that is not there
+     * and for one that is there with an unreadable config/module.ini. Those need different advice -
+     * install it, versus repair it - so callers that would otherwise report the wrong one ask this
+     * first. Mirrors isThemeRegistered().
+     *
+     * @param string $id The module identifier, i.e. its directory name.
+     */
+    public function isModuleRegistered(string $id): bool
+    {
+        return is_dir($this->publicDir . '/modules/' . $id);
+    }
+
+    /**
      * Get the version of a module on disk.
      *
      * @param string $id The module identifier, i.e. its directory name.
-     * @return string|null Null when the module is absent or its INI is unusable.
+     * @return string|null Null when the module is absent or its INI is unusable. Use
+     *   isModuleRegistered() to tell those apart.
      */
     public function getModuleVersion(string $id): ?string
     {
@@ -119,7 +135,8 @@ class Inspector
      * Get the version of a theme on disk.
      *
      * @param string $id The theme identifier, i.e. its directory name.
-     * @return string|null Null when the theme is absent or its INI is unusable.
+     * @return string|null Null when the theme is absent or its INI is unusable. Use
+     *   isThemeRegistered() to tell those apart.
      */
     public function getThemeVersion(string $id): ?string
     {

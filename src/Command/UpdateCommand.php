@@ -41,14 +41,7 @@ class UpdateCommand extends Command
         $healthCheck = (bool) $input->getOption('health-check');
         $application = $this->getApplication();
 
-        // Captured before the download, through raw PDO and the filesystem only. This is the same
-        // rule the lock below enforces: nothing here may load an Omeka class, because PHP cannot
-        // replace a class once it is declared and the rest of the process would then be running
-        // the old code.
         $before = null;
-        if ($healthCheck) {
-            $before = $this->captureSnapshot();
-        }
 
         /**
          * @var \App\Command\UpdateCodeCommand $codeCommand
@@ -67,6 +60,13 @@ class UpdateCommand extends Command
         // fails with an explanation rather than silently updating against stale code.
         Omeka::lockBootstrap();
         try {
+            // Taken inside the lock window, not before it. The snapshot reads raw PDO and the
+            // filesystem only, so it is safe here today - but the lock is the mechanism that would
+            // catch it if that ever stopped being true, and a snapshot taken outside the window is
+            // a snapshot the guard does not cover.
+            if ($healthCheck) {
+                $before = $this->captureSnapshot();
+            }
             $exitCode = $codeCommand->run($codeInput, $output);
         } finally {
             Omeka::unlockBootstrap();
@@ -145,16 +145,9 @@ class UpdateCommand extends Command
         $output->writeln('<info>Running the health checks.</info>');
         $output->writeln('');
 
-        $configPath = $rootDir . '/config/config.json';
-        $baseUrl = null;
-        if (is_readable($configPath)) {
-            $config = json_decode((string) file_get_contents($configPath), true);
-            if (is_array($config) && isset($config['url']) && is_string($config['url']) && $config['url'] !== '') {
-                $baseUrl = rtrim($config['url'], '/');
-            }
-        }
-
-        $factory = new CheckerFactory($rootDir, $baseUrl, 30, false, 5000, 5);
+        // Base URL and check options both come from CheckerFactory, so that this entry point and
+        // "health:check" cannot drift apart on either.
+        $factory = new CheckerFactory($rootDir, CheckerFactory::baseUrlFromConfig($rootDir));
         $report = $factory->createRunner()->run();
 
         $after = $this->captureSnapshot();

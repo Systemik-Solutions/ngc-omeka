@@ -14,16 +14,23 @@ use App\Health\Result;
  * Only a version gap is a failure. Whether a module is active is a project decision - a site that
  * does not need a feature may legitimately turn it off - and which modules a project runs beyond
  * the distribution is worth reporting but is not a defect either. Both are INFO.
+ *
+ * The manifest arrives as a closure for the reason ManifestCheck documents: reading
+ * distribution.json can throw, and it must throw inside run() so the Runner turns it into a FAIL
+ * for this check rather than aborting the whole command.
  */
 class ModuleStateCheck implements Check
 {
     private const ID = 'modules.state';
 
+    /**
+     * @param \Closure(): Manifest $manifest Reads distribution.json when the check runs.
+     */
     public function __construct(
         private string $rootDir,
         private Inspector $inspector,
         private ?DbProbe $dbProbe,
-        private Manifest $manifest,
+        private \Closure $manifest,
     ) {
     }
 
@@ -46,7 +53,7 @@ class ModuleStateCheck implements Check
     {
         $onDisk = $this->modulesOnDisk();
         $rows = $this->dbProbe->moduleRows();
-        $inManifest = $this->manifest->resolveModuleIds(null);
+        $inManifest = ($this->manifest)()->resolveModuleIds(null);
 
         $results = [];
         $behind = [];
@@ -54,9 +61,18 @@ class ModuleStateCheck implements Check
         $notInstalled = [];
         $inactive = [];
         $extra = [];
+        $unreadable = [];
 
         foreach ($onDisk as $id) {
             $diskVersion = $this->inspector->getModuleVersion($id);
+
+            // modulesOnDisk() already required config/module.ini to exist, so a null version here
+            // means the file is present and malformed. Left silent, the version comparison below
+            // would simply not happen and the module would be reported as matching the database.
+            if ($diskVersion === null) {
+                $unreadable[] = $id;
+            }
+
             if (!isset($rows[$id])) {
                 if (in_array($id, $inManifest, true)) {
                     $notInstalled[] = $id;
@@ -103,7 +119,24 @@ class ModuleStateCheck implements Check
         if ($behind === [] && $ahead === []) {
             $results[] = Result::pass(
                 self::ID,
-                sprintf('Module state: %d module(s) on disk, versions match the database', count($onDisk))
+                $unreadable === []
+                    ? sprintf('Module state: %d module(s) on disk, versions match the database', count($onDisk))
+                    : sprintf(
+                        'Module state: %d of %d module(s) on disk compared, versions match the database',
+                        count($onDisk) - count($unreadable),
+                        count($onDisk)
+                    )
+            );
+        }
+
+        // A warning rather than a failure: a malformed module.ini is a real problem, but it is not
+        // proof that the module or the instance is broken.
+        if ($unreadable !== []) {
+            sort($unreadable);
+            $results[] = Result::warn(
+                self::ID,
+                sprintf('Module state: %d module(s) have an unreadable module.ini', count($unreadable)),
+                array_merge($unreadable, ['Their version could not be compared against the database.'])
             );
         }
 

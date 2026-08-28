@@ -26,9 +26,9 @@ class HealthCheckCommand extends Command
         $this->addOption('url', null, InputOption::VALUE_REQUIRED, 'Base URL of the instance. Overrides the "url" key in config.json.');
         $this->addOption('json', null, InputOption::VALUE_NONE, 'Output the report as JSON instead of text.');
         $this->addOption('strict', null, InputOption::VALUE_NONE, 'Treat warnings as failures for the exit code.');
-        $this->addOption('media-samples', null, InputOption::VALUE_REQUIRED, 'How many media files to sample.', '5');
-        $this->addOption('slow-ms', null, InputOption::VALUE_REQUIRED, 'Response time in milliseconds above which a request warns.', '5000');
-        $this->addOption('timeout', null, InputOption::VALUE_REQUIRED, 'HTTP request timeout in seconds.', '30');
+        $this->addOption('media-samples', null, InputOption::VALUE_REQUIRED, 'How many media files to sample.', (string) CheckerFactory::DEFAULT_MEDIA_SAMPLES);
+        $this->addOption('slow-ms', null, InputOption::VALUE_REQUIRED, 'Response time in milliseconds above which a request warns.', (string) CheckerFactory::DEFAULT_SLOW_MS);
+        $this->addOption('timeout', null, InputOption::VALUE_REQUIRED, 'HTTP request timeout in seconds.', (string) CheckerFactory::DEFAULT_TIMEOUT_SECONDS);
         $this->addOption('insecure', null, InputOption::VALUE_NONE, 'Skip TLS certificate verification.');
     }
 
@@ -38,13 +38,27 @@ class HealthCheckCommand extends Command
         $strict = (bool) $input->getOption('strict');
         $json = (bool) $input->getOption('json');
 
+        $numbers = [];
+        foreach (['timeout', 'slow-ms', 'media-samples'] as $option) {
+            $value = $this->parseNonNegativeInt($input->getOption($option));
+            if ($value === null) {
+                $output->writeln(sprintf(
+                    '<error>--%s must be a non-negative whole number, got "%s".</error>',
+                    $option,
+                    (string) $input->getOption($option)
+                ));
+                return Command::INVALID;
+            }
+            $numbers[$option] = $value;
+        }
+
         $factory = new CheckerFactory(
             $rootDir,
             $this->resolveBaseUrl($rootDir, $input->getOption('url')),
-            (int) $input->getOption('timeout'),
+            $numbers['timeout'],
             (bool) $input->getOption('insecure'),
-            (int) $input->getOption('slow-ms'),
-            (int) $input->getOption('media-samples'),
+            $numbers['slow-ms'],
+            $numbers['media-samples'],
         );
 
         $report = $factory->createRunner()->run();
@@ -64,20 +78,31 @@ class HealthCheckCommand extends Command
      * Nothing is not an error. Omeka S stores no base URL of its own, so without one the HTTP checks
      * simply skip and the database and filesystem checks still run.
      */
-    private function resolveBaseUrl(string $rootDir, ?string $option): ?string
+    private function resolveBaseUrl(string $rootDir, mixed $option): ?string
     {
         if (is_string($option) && $option !== '') {
             return rtrim($option, '/');
         }
+        return CheckerFactory::baseUrlFromConfig($rootDir);
+    }
 
-        $configPath = $rootDir . '/config/config.json';
-        if (!is_readable($configPath)) {
+    /**
+     * Read a numeric option, or null when it is not a non-negative whole number.
+     *
+     * Casting with (int) instead would turn a typo into a plausible-looking zero, and every one of
+     * these options means something dangerous at zero: Guzzle reads timeout 0 as "no timeout", so
+     * --timeout=abc would silently disable the very thing it configures, and --media-samples=abc
+     * becomes LIMIT 0, which returns no rows and makes the media check state confidently that the
+     * instance has no stored files.
+     */
+    private function parseNonNegativeInt(mixed $value): ?int
+    {
+        if (is_int($value)) {
+            return $value >= 0 ? $value : null;
+        }
+        if (!is_string($value) || !preg_match('/^\d+$/', trim($value))) {
             return null;
         }
-        $config = json_decode((string) file_get_contents($configPath), true);
-        if (!is_array($config) || !isset($config['url']) || !is_string($config['url']) || $config['url'] === '') {
-            return null;
-        }
-        return rtrim($config['url'], '/');
+        return (int) trim($value);
     }
 }
