@@ -6,13 +6,13 @@
   "modules": [
     {
       "name": "Common",
-      "url": "https://github.com/Daniel-KM/Omeka-S-module-Common/releases/download/3.4.73/Common-3.4.73.zip",
-      "version": "3.4.73"
+      "url": "https://github.com/Daniel-KM/Omeka-S-module-Common/releases/download/3.4.96/Common-3.4.96.zip",
+      "version": "3.4.96"
     },
     {
       "name": "CustomOntology",
-      "url": "https://github.com/Daniel-KM/Omeka-s-module-CustomOntology/releases/download/3.4.6/CustomOntology-3.4.6.zip",
-      "version": "3.4.6"
+      "url": "https://github.com/Daniel-KM/Omeka-S-module-CustomOntology/releases/download/3.4.7/CustomOntology-3.4.7.zip",
+      "version": "3.4.7"
     },
     {
       "name": "CSVImport",
@@ -21,28 +21,28 @@
     },
     {
       "name": "PdfEmbed",
-      "url": "https://github.com/zerocrates/PdfEmbedS/releases/download/v1.3.0/PdfEmbed-1.3.0.zip",
-      "version": "1.3.0"
+      "url": "https://github.com/zerocrates/PdfEmbedS/releases/download/v1.3.1/PdfEmbed-1.3.1.zip",
+      "version": "1.3.1"
     },
     {
       "name": "CustomVocab",
-      "url": "https://github.com/omeka-s-modules/CustomVocab/releases/download/v2.0.2/CustomVocab-2.0.2.zip",
-      "version": "2.0.2"
+      "url": "https://github.com/omeka-s-modules/CustomVocab/releases/download/v2.1.0/CustomVocab-2.1.0.zip",
+      "version": "2.1.0"
     },
     {
       "name": "DataTypeGeometry",
-      "url": "https://github.com/Daniel-KM/Omeka-S-module-DataTypeGeometry/releases/download/3.4.5/DataTypeGeometry-3.4.5.zip",
-      "version": "3.4.5"
+      "url": "https://github.com/Daniel-KM/Omeka-S-module-DataTypeGeometry/releases/download/3.4.9/DataTypeGeometry-3.4.9.zip",
+      "version": "3.4.9"
     },
     {
       "name": "DataTypeRdf",
-      "url": "https://github.com/Daniel-KM/Omeka-s-module-DataTypeRdf/releases/download/3.4.14/DataTypeRdf-3.4.14.zip",
-      "version": "3.4.14"
+      "url": "https://github.com/Daniel-KM/Omeka-S-module-DataTypeRdf/releases/download/3.4.19/DataTypeRdf-3.4.19.zip",
+      "version": "3.4.19"
     },
     {
       "name": "NumericDataTypes",
-      "url": "https://github.com/omeka-s-modules/NumericDataTypes/releases/download/v1.13.0/NumericDataTypes-1.13.0.zip",
-      "version": "1.13.0"
+      "url": "https://github.com/omeka-s-modules/NumericDataTypes/releases/download/v1.15.0/NumericDataTypes-1.15.0.zip",
+      "version": "1.15.0"
     },
     {
       "name": "NodeGraph",
@@ -93,8 +93,8 @@
   "themes": [
     {
       "name": "lively",
-      "url": "https://github.com/omeka-s-themes/lively/releases/download/v1.0.0/lively-v1.0.0.zip",
-      "version": "1.0.0"
+      "url": "https://github.com/omeka-s-themes/lively/releases/download/v1.2.0/lively-v1.2.0.zip",
+      "version": "1.2.0"
     }
   ],
   "vocabularies": [
