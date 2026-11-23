@@ -1,7 +1,7 @@
 {
   "core": {
-    "url": "https://github.com/omeka/omeka-s/releases/download/v4.1.1/omeka-s-4.1.1.zip",
-    "version": "4.1.1"
+    "url": "https://github.com/omeka/omeka-s/releases/download/v4.2.1/omeka-s-4.2.1.zip",
+    "version": "4.2.1"
   },
   "modules": [
     {
