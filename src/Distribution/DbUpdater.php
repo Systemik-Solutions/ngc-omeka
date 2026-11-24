@@ -18,6 +18,11 @@ use App\Omeka;
 class DbUpdater
 {
     /**
+     * The shared library module that other modules call into from their install() and upgrade().
+     */
+    private const COMMON_MODULE = 'Common';
+
+    /**
      * Module states in which no install or upgrade can be applied, whatever the version numbers say.
      *
      * A module in one of these is not merely up to date - Omeka has refused to load it, so the
@@ -85,6 +90,14 @@ class DbUpdater
                 ];
             }
         }
+
+        // The module manager lists modules alphabetically, but modules that depend on Common need
+        // it installed or upgraded - and active - before their own install or upgrade runs. None
+        // of them declare it in module.ini, so it cannot be derived; put it first by name.
+        if (isset($updates[self::COMMON_MODULE])) {
+            $updates = [self::COMMON_MODULE => $updates[self::COMMON_MODULE]] + $updates;
+        }
+
         return $updates;
     }
 
@@ -149,11 +162,27 @@ class DbUpdater
                 $moduleManager->install($module);
             } elseif ($state === \Omeka\Module\Manager::STATE_NEEDS_UPGRADE) {
                 $moduleManager->upgrade($module);
+            } else {
+                // Any other state means there is nothing to apply.
+                return;
             }
-            // Any other state means there is nothing to apply.
         } catch (\Exception $e) {
             $verb = $state === \Omeka\Module\Manager::STATE_NOT_INSTALLED ? 'installation' : 'update';
             throw new \RuntimeException("Module {$verb} failed: " . $e->getMessage(), 0, $e);
+        }
+
+        // Omeka merges the config of active modules only, at bootstrap. A module that was pending
+        // when this process booted has had no services registered, and stays that way after it is
+        // activated here - so a later module that relies on it (Daniel-KM's modules call
+        // Common\EasyMeta, Common\UpgradeJobDispatch and others from their upgrade()) fails with
+        // "Unable to resolve service". Re-init so the next module sees it. Reload drops the
+        // identity, and installing or upgrading a module needs one.
+        Omeka::reloadApp();
+        if (!Omeka::authenticate()) {
+            throw new \RuntimeException(
+                "Module {$id} was updated, but re-authenticating after reloading Omeka S failed,"
+                . ' so the remaining modules cannot be updated in this run.'
+            );
         }
     }
 
